@@ -1,0 +1,18 @@
+# coding=gbk
+from tkinter import *
+import tkinter.filedialog
+
+root = Tk()
+
+def xz():
+    filename = tkinter.filedialog.askopenfilename()
+    if filename != '':
+        lb.config(text = "file name£º"+filename);
+    else:
+        lb.config(text = "No file");
+
+lb = Label(root,text = '')
+lb.pack()
+btn = Button(root,text="select",command=xz)
+btn.pack()
+root.mainloop()
