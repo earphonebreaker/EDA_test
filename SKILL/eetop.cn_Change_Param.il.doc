@@ -1,0 +1,23 @@
+lib       =   "Lib_Name"
+cell      =   "Cell_Name"
+view    =   "schematic"
+
+fingers        = "fingers" ;; change the "fingers" if the parameter name is not right for you
+figner_value = "1"
+
+;;; ===== no need to change below this point. ========
+when( cv=dbOpenCellViewByType(lib cell view " "  "a")
+  insts = cv ~> instances
+  foreach( inst insts
+     cdf=cdfGetInstCF(inst)
+     params  = cdf~>parameters
+     finger_param = car(setof(x params x!>name==fingers))
+     old_value = finger_param~>value 
+     dbSet(inst "1" finger_param~>value)
+     printf("Changing parameter %s/%s's value to %s.\n" inst~>name finger_param~>name finger_value )     
+
+  ) ;; foreach inst 
+  schCheck(cv) 
+  dbSave(cv) 
+  dbClose(cv)
+) ;; when cv
