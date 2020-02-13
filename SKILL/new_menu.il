@@ -1,17 +1,19 @@
-;表格代码区
-procedure( myformfunc( wid )
-let( ( margin_dir margin_lib margin_cell myform1Symbol myform1 )
+;2020/2/12 杨树澄
+;Virtuoso外挂系列
+;--------------------------------------------------------------------------
+procedure( margin_form( wid );创建Margin仿真对话框
+let( ( margin_dir margin_lib margin_cell margin1Symbol margin1 )
 margin_dir = hiCreateStringField(
 ?prompt "Target Directory"
 ?name 'margin_dir
-?value "directory"
-?defValue "directory"
+?value "/home/SIMIT/yangshucheng/Cadence/lib/lib_Nb03/";预留
+?defValue "directory";预留
 )
 
 margin_lib = hiCreateStringField(
 ?prompt "Library Name"
 ?name 'margin_lib
-?value "lib"
+?value "ysc_test"
 ?defValue "lib"
 )
 
@@ -21,56 +23,62 @@ margin_cell = hiCreateStringField(
 ?value "cell"
 ?defValue "cell"
 )
-
-myform1Symbol = gensym( 'WindowForm ) ;;; advanced version
-;;; otherwise use 'WindowForm
-
-myform1 = hiCreateAppForm(
-?name myform1Symbol
+;创建窗口symbol
+margin1Symbol = gensym( 'WindowForm )
+;创建窗口主体
+margin1 = hiCreateAppForm(
+?name margin1Symbol
 ?formTitle "Calculate Margins"
 ?callback  "mycallbackfunc( hiGetCurrentForm() )"
 ?dontBlock t
 ?fields list( margin_dir margin_lib margin_cell )
 ?unmapAfterCB t )
-myform1->wid = wid ;;; associate the wid with the form, via a user-
+margin1->wid = wid ;;; associate the wid with the form, via a user-
 ;;; defined slot
-myform1 ;;; my return value
+margin1 ;;; my return value
 ) ; let
 ) ; procedure
 
-procedure( mycallbackfunc( myform1 )
+;返回功能函数，点击ok后自动开始计算margin
+procedure( mycallbackfunc( margin1 )
 let( ( wid getdir getlib getcell )
 ;;; pick up current form values
-wid = myform1->wid ;;; user specified slot linking the form
+wid = margin1->wid ;;; user specified slot linking the form
 ;;; to the window
-getdir = myform1->margin_dir->value
-getlib = myform1->margin_lib->value
-getcell = myform1->margin_cell->value
+getdir = margin1->margin_dir->value
+getlib = margin1->margin_lib->value
+getcell = margin1->margin_cell->value
 ;;; set the window name
 println( getdir )
 println( getlib )
 println( getcell )
-outputstr(getlib)
+CalculateMargins(getdir)
 pscan_netlist( getdir getlib getcell )
+system("bash run.sh")
 t ;;; my return value
 ) ; let
 ) ; procedure
-
-procedure( myform()
+;打开窗口子函数
+procedure( margin_window()
 let( ( wf )
-wf=myformfunc(window(1))
+wf=margin_form(window(1))
 hiDisplayForm( wf )
-)
-)
+);let
+);procedure
 
-procedure( outputstr( str )
+;计算margin脚本子函数
+procedure( CalculateMargins( str )
 let( ( f )
-f = outfile("./test.txt" "w")
-println( str f )
+f = outfile("./run.sh" "w")
+c=strcat( "cd" " " str)
+d="python margins.py main"
+fprintf( f "%s\n" c )
+fprintf( f "%s" d )
 close(f)
-)
-)
+);let
+);procedure
 
+;netlist生成子函数
 procedure( pscan_netlist( path lib cell )
 let( ( n )
 simInitEnvWithArgs( 
@@ -98,14 +106,14 @@ nil
 10
 ) 
 
-)
-)
-
+);let
+);procedure
+;-------------------------------以下为菜单栏设置------------------------
 ;菜单栏设置
 menuItem_1=hiCreateMenuItem( ;菜单栏1
 ?name 'menu_1
 ?itemText "Margins"
-?callback "myform" ;调用表格函数
+?callback "margin_window" ;调用表格函数
 )
 menuItem_2=hiCreateMenuItem( ;菜单栏2
 ?name 'menu_2
