@@ -2,18 +2,19 @@
 ;SFQ工具箱
 ;-----------------------------计算margin--------------------------------
 procedure( margin_form( wid )
-let( ( margin_dir margin_lib margin_cell margin1Symbol margin1 )
+let( ( margin_dir margin_lib margin_cell margin_max margin_eps  margin1Symbol margin1 )
 ;获取当前编辑的单元信息↓
 deCV_margin = deGetEditCellView()
 libName_margin = deCV_margin~>libName
 cellName_margin = deCV_margin~>cellName
 viewName_margin = deCV_margin~>viewName
+dirwithcellview_margin=strcat( "~/Cadence/designs/" cellName_margin )
 ;目录↓
 margin_dir = hiCreateStringField(
 ?prompt "Target Directory"
 ?name 'margin_dir
-?value "~/Cadence/designs/"
-?defValue "~/Cadence/designs/"
+?value dirwithcellview_margin
+?defValue dirwithcellview_margin
 )
 ;库名↓
 margin_lib = hiCreateStringField(
@@ -29,6 +30,22 @@ margin_cell = hiCreateStringField(
 ?value cellName_margin
 ?defValue cellName_margin
 )
+
+;最大上确界↓
+margin_max = hiCreateStringField(
+?prompt "Max margin"
+?name 'margin_max
+?value "0.5"
+?defValue "0.5"
+)
+;精度↓
+margin_eps = hiCreateStringField(
+?prompt "Eps"
+?name 'margin_eps
+?value "0.01"
+?defValue "0.01"
+)
+
 ;表格主体↓
 margin1Symbol = gensym( 'WindowForm ) 
 margin1 = hiCreateAppForm(
@@ -36,7 +53,7 @@ margin1 = hiCreateAppForm(
 ?formTitle "Calculate Margins"
 ?callback  "mycallbackfunc_margin( hiGetCurrentForm() )"
 ?dontBlock t
-?fields list( margin_dir margin_lib margin_cell )
+?fields list( margin_dir margin_lib margin_cell margin_max margin_eps )
 ?unmapAfterCB t )
 margin1->wid = wid ;;; associate the wid with the form, via a user-
 ;;; defined slot
@@ -45,18 +62,16 @@ margin1 ;;; my return value
 ) ; procedure
 ;点击后激活函数
 procedure( mycallbackfunc_margin( margin1 )
-let( ( wid getdir_margin getlib_margin getcell_margin )
+let( ( wid getdir_margin getlib_margin getcell_margin get_max get_eps)
 ;;; pick up current form values
 wid = margin1->wid ;;; user specified slot linking the form
 ;;; to the window
 getdir_margin = margin1->margin_dir->value
 getlib_margin = margin1->margin_lib->value
 getcell_margin = margin1->margin_cell->value
-;;; set the window name
-;println( getdir )
-;println( getlib )
-;println( getcell )
-CalculateMargins(getdir_margin)
+getmax_margin = margin1->margin_max->value
+geteps_margin = margin1->margin_eps->value
+CalculateMargins(getdir_margin getmax_margin geteps_margin)
 pscan_netlist( getdir_margin getlib_margin getcell_margin )
 system("bash margin.sh")
 system("rm margin.sh")
@@ -71,12 +86,12 @@ hiDisplayForm( wf )
 )
 )
 ;生成sh脚本
-procedure( CalculateMargins( str )
+procedure( CalculateMargins( dir max eps )
 let( ( f )
 f = outfile("./margin.sh" "w")
-c=strcat( "cd" " " str)
-d="python margins.py main"
-e="cp /home/SIMIT/yangshucheng/files/margins.py ./" ;此处为复制到仿真目录的margin脚本地址
+c=strcat( "cd" " " dir)
+d=strcat( "python margins_for_SKILL.py main " max " " eps )
+e="cp /home/SIMIT/yangshucheng/files/margins_for_SKILL.py ./" ;此处为复制到仿真目录的margin脚本地址
 fprintf( f "%s\n" c )
 fprintf( f "%s\n" e )
 fprintf( f "%s" d )
@@ -117,18 +132,19 @@ nil
 ;margin模块复制过来改的，只有ipc处有变化
 
 procedure( timing_form( wid2 )
-let( ( timing_dir timing_lib timing_cell timing1Symbol timing1 )
+let( ( timing_dir timing_lib timing_cell timing_param1 timing_step1 timing_max1 timing_min1 timing_param2 timing_step2 timing_max2 timing_min2 timing1Symbol timing1 )
 
 deCV_timing = deGetEditCellView()
 libName_timing = deCV_timing~>libName
 cellName_timing = deCV_timing~>cellName
 viewName_timing = deCV_timing~>viewName
+dirwithcellview_timing=strcat( "~/Cadence/designs/" cellName_timing )
 
 timing_dir = hiCreateStringField(
 ?prompt "Target Directory"
 ?name 'timing_dir
-?value "~/Cadence/designs/"
-?defValue "~/Cadence/designs/"
+?value dirwithcellview_timing
+?defValue dirwithcellview_timing
 )
 
 timing_lib = hiCreateStringField(
@@ -145,6 +161,60 @@ timing_cell = hiCreateStringField(
 ?defValue cellName_timing
 )
 
+
+timing_param1 = hiCreateStringField(
+?prompt "Parameter 1"
+?name 'timing_param1
+?value "DAT"
+?defValue "DAT"
+)
+timing_step1 = hiCreateStringField(
+?prompt "Step 1"
+?name 'timing_step1
+?value "1"
+?defValue "1"
+)
+timing_max1 = hiCreateStringField(
+?prompt "Max 1"
+?name 'timing_max1
+?value "30"
+?defValue "30"
+)
+timing_min1 = hiCreateStringField(
+?prompt "Min 1"
+?name 'timing_min1
+?value "0"
+?defValue "0"
+)
+
+
+
+timing_param2 = hiCreateStringField(
+?prompt "Parameter 2"
+?name 'timing_param2
+?value "XI"
+?defValue "XI"
+)
+timing_step2 = hiCreateStringField(
+?prompt "Step 2"
+?name 'timing_step2
+?value "0.05"
+?defValue "0.05"
+)
+timing_max2 = hiCreateStringField(
+?prompt "Max 2"
+?name 'timing_max2
+?value "1.35"
+?defValue "1.35"
+)
+timing_min2 = hiCreateStringField(
+?prompt "Min 2"
+?name 'timing_min2
+?value "0.7"
+?defValue "0.7"
+)
+
+
 timing1Symbol = gensym( 'WindowForm ) ;;; advanced version
 ;;; otherwise use 'WindowForm
 
@@ -153,7 +223,7 @@ timing1 = hiCreateAppForm(
 ?formTitle "Timing extraction"
 ?callback  "mycallbackfunc_timing( hiGetCurrentForm() )"
 ?dontBlock t
-?fields list( timing_dir timing_lib timing_cell )
+?fields list( timing_dir timing_lib timing_cell timing_param1 timing_step1 timing_max1 timing_min1 timing_param2 timing_step2 timing_max2 timing_min2)
 ?unmapAfterCB t )
 timing1->wid2 = wid2 ;;; associate the wid with the form, via a user-
 ;;; defined slot
@@ -162,21 +232,26 @@ timing1 ;;; my return value
 ) ; procedure
 
 procedure( mycallbackfunc_timing( timing1 )
-let( ( wid2 getdir_timing getlib_timing getcell_timing )
+let( ( wid2 getdir_timing getlib_timing getcell_timing getparam1 getstep1 getmax1 getmin1 getparam2 getstep2 getmax2 getmin2)
 ;;; pick up current form values
 wid2 = timing1->wid2 ;;; user specified slot linking the form
 ;;; to the window
 getdir_timing = timing1->timing_dir->value
 getlib_timing = timing1->timing_lib->value
 getcell_timing = timing1->timing_cell->value
-;;; set the window name
-;println( getdir )
-;println( getlib )
-;println( getcell )
-CalculateTiming(getdir_timing)
+getparam1 = timing1->timing_param1->value
+getstep1 = timing1->timing_step1->value
+getmax1 = timing1->timing_max1->value
+getmin1 = timing1->timing_min1->value
+getparam2 = timing1->timing_param2->value
+getstep2 = timing1->timing_step2->value
+getmax2 = timing1->timing_max2->value
+getmin2 = timing1->timing_min2->value
+
+CalculateTiming(getdir_timing getparam1 getstep1 getmax1 getmin1 getparam2 getstep2 getmax2 getmin2)
 pscan_netlist( getdir_timing getlib_timing getcell_timing )
 ipcBeginProcess("bash timing.sh") ;ipc函数后台运行，不显示在terminal内
-system("rm timing.sh") 
+;system("rm timing.sh") 
 t ;;; my return value
 ) ; let
 ) ; procedure
@@ -187,12 +262,13 @@ wf_timing=timing_form(window(1))
 hiDisplayForm( wf_timing )
 )
 )
+;    python Timing_extract.py --circuit=main --param1=DAT --step1=1 --max1=30 --min1=0 --param2=XI --step2=0.05 --max2=1.35 --min2=0.7
 
-procedure( CalculateTiming( str )
+procedure( CalculateTiming( dir param1 step1 max1 min1 param2 step2 max2 min2 )
 let( ( f )
 f = outfile("./timing.sh" "w")
-c=strcat( "cd" " " str)
-d="python Timing_extract.py --circuit=main --param1=DAT --step1=1 --max1=30 --min1=0 --param2=XI --step2=0.05 --max2=1.35 --min2=0.7";后期考虑加入这些参数设置
+c=strcat( "cd" " " dir)
+d=strcat( "python Timing_extract.py --circuit=main --param1=" param1 " --step1=" step1 " --max1=" max1 " --min1=" min1 " --param2=" param2 " --step2=" step2 " --max2=" max2 " --min2=" min2 );后期考虑加入这些参数设置
 e="cp /home/SIMIT/yangshucheng/files/Timing_extract.py ./"
 a="cp /home/SIMIT/yangshucheng/files/pscanrc.py ./"
 fprintf( f "%s\n" c )
@@ -210,12 +286,14 @@ deCV_psui = deGetEditCellView()
 libName_psui = deCV_psui~>libName
 cellName_psui = deCV_psui~>cellName
 viewName_psui = deCV_psui~>viewName
+dirwithcellview_psui=strcat( "~/Cadence/designs/" cellName_psui )
+
 ;目录↓
 psui_dir = hiCreateStringField(
 ?prompt "Target Directory"
 ?name 'psui_dir
-?value "~/Cadence/designs/"
-?defValue "~/Cadence/designs/"
+?value dirwithcellview_psui
+?defValue dirwithcellview_psui
 )
 ;库名↓
 psui_lib = hiCreateStringField(
@@ -290,12 +368,14 @@ deCV_simulate = deGetEditCellView()
 libName_simulate = deCV_simulate~>libName
 cellName_simulate = deCV_simulate~>cellName
 viewName_simulate = deCV_simulate~>viewName
+dirwithcellview_simulate=strcat( "~/Cadence/designs/" cellName_simulate )
+
 ;目录↓
 simulate_dir = hiCreateStringField(
 ?prompt "Target Directory"
 ?name 'simulate_dir
-?value "~/Cadence/designs/"
-?defValue "~/Cadence/designs/"
+?value dirwithcellview_simulate
+?defValue dirwithcellview_simulate
 )
 ;库名↓
 simulate_lib = hiCreateStringField(
@@ -372,17 +452,17 @@ menuItem_margins=hiCreateMenuItem( ;菜单栏1
 menuItem_psui=hiCreateMenuItem( ;菜单栏2
 ?name 'psui
 ?itemText "psui"
-?callback "psui_window" ;预留
+?callback "psui_window" ;
 )
 menuItem_timing=hiCreateMenuItem( ;菜单栏3
 ?name 'Timing
 ?itemText "Timing"
-?callback "timing_window" ;预留
+?callback "timing_window" ;
 )
 menuItem_simulate=hiCreateMenuItem( ;菜单栏3
 ?name 'Simulate
 ?itemText "Simulate"
-?callback "simulate_window" ;预留
+?callback "simulate_window" ;
 )
 
 ;设置下拉菜单选项
@@ -448,7 +528,7 @@ menuItem_C= hiCreateMenuItem(
 
 hiCreatePulldownMenu(
 'trPulldownMenu
-"SFQsim"
+"SFQtool"
 list( sliderMenuItem_A sliderMenuItem_B  separator_1 menuItem_C )
 )
 ;添加至layout窗口
