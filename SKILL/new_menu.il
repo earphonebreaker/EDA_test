@@ -1,7 +1,7 @@
 ;2020/2/12 杨树澄
 ;SFQ工具箱
 ;-----------------------------计算margin--------------------------------
-procedure( margin_form( wid )
+procedure( margin_form( wid_margin )
 let( ( margin_dir margin_lib margin_cell margin_max margin_eps  margin1Symbol margin1 )
 ;获取当前编辑的单元信息↓
 deCV_margin = deGetEditCellView()
@@ -55,16 +55,16 @@ margin1 = hiCreateAppForm(
 ?dontBlock t
 ?fields list( margin_dir margin_lib margin_cell margin_max margin_eps )
 ?unmapAfterCB t )
-margin1->wid = wid ;;; associate the wid with the form, via a user-
+margin1->wid_margin = wid_margin ;;; associate the wid with the form, via a user-
 ;;; defined slot
 margin1 ;;; my return value
 ) ; let
 ) ; procedure
 ;点击后激活函数
 procedure( mycallbackfunc_margin( margin1 )
-let( ( wid getdir_margin getlib_margin getcell_margin get_max get_eps)
+let( ( wid_margin getdir_margin getlib_margin getcell_margin get_max get_eps)
 ;;; pick up current form values
-wid = margin1->wid ;;; user specified slot linking the form
+wid_margin = margin1->wid_margin ;;; user specified slot linking the form
 ;;; to the window
 getdir_margin = margin1->margin_dir->value
 getlib_margin = margin1->margin_lib->value
@@ -80,9 +80,9 @@ t ;;; my return value
 ) ; procedure
 ;打开窗口函数
 procedure( margin_window()
-let( ( wf )
-wf=margin_form(window(1))
-hiDisplayForm( wf )
+let( ( wf_margin )
+wf_margin=margin_form(window(1))
+hiDisplayForm( wf_margin )
 )
 )
 ;生成sh脚本
@@ -131,7 +131,7 @@ nil
 ;----------------------------提时序------------------------------------
 ;margin模块复制过来改的，只有ipc处有变化
 
-procedure( timing_form( wid2 )
+procedure( timing_form( wid_timing )
 let( ( timing_dir timing_lib timing_cell timing_param1 timing_step1 timing_max1 timing_min1 timing_param2 timing_step2 timing_max2 timing_min2 timing1Symbol timing1 )
 
 deCV_timing = deGetEditCellView()
@@ -225,16 +225,16 @@ timing1 = hiCreateAppForm(
 ?dontBlock t
 ?fields list( timing_dir timing_lib timing_cell timing_param1 timing_step1 timing_max1 timing_min1 timing_param2 timing_step2 timing_max2 timing_min2)
 ?unmapAfterCB t )
-timing1->wid2 = wid2 ;;; associate the wid with the form, via a user-
+timing1->wid_timing = wid_timing ;;; associate the wid with the form, via a user-
 ;;; defined slot
 timing1 ;;; my return value
 ) ; let
 ) ; procedure
 
 procedure( mycallbackfunc_timing( timing1 )
-let( ( wid2 getdir_timing getlib_timing getcell_timing getparam1 getstep1 getmax1 getmin1 getparam2 getstep2 getmax2 getmin2)
+let( ( wid_timing getdir_timing getlib_timing getcell_timing getparam1 getstep1 getmax1 getmin1 getparam2 getstep2 getmax2 getmin2)
 ;;; pick up current form values
-wid2 = timing1->wid2 ;;; user specified slot linking the form
+wid_timing = timing1->wid_timing ;;; user specified slot linking the form
 ;;; to the window
 getdir_timing = timing1->timing_dir->value
 getlib_timing = timing1->timing_lib->value
@@ -251,7 +251,7 @@ getmin2 = timing1->timing_min2->value
 CalculateTiming(getdir_timing getparam1 getstep1 getmax1 getmin1 getparam2 getstep2 getmax2 getmin2)
 pscan_netlist( getdir_timing getlib_timing getcell_timing )
 ipcBeginProcess("bash timing.sh") ;ipc函数后台运行，不显示在terminal内
-;system("rm timing.sh") 
+system("rm timing.sh") 
 t ;;; my return value
 ) ; let
 ) ; procedure
@@ -429,10 +429,10 @@ hiDisplayForm( wf_simulate )
 )
 )
 ;生成sh脚本
-procedure( SFQSimulate( str )
+procedure( SFQSimulate( path )
 let( ( f )
 f = outfile("./simulate.sh" "w")
-c=strcat( "cd" " " str)
+c=strcat( "cd" " " path)
 d="python simulate.py main"
 e="cp /home/SIMIT/yangshucheng/files/simulate.py ./" ;此处为复制到仿真目录的simulate脚本地址
 fprintf( f "%s\n" c )
@@ -442,6 +442,96 @@ close(f)
 )
 )
 ;--------------------------------------------------------------------------
+
+;--------------------------routing-----------------------------------
+procedure( routing_form( wid_routing )
+let( ( routing_dir routing_lib routing_cell routing1Symbol routing1 )
+;获取当前编辑的单元信息↓
+deCV_routing = deGetEditCellView()
+libName_routing = deCV_routing~>libName
+cellName_routing = deCV_routing~>cellName
+viewName_routing = deCV_routing~>viewName
+dirwithcellview_routing=strcat( "~/Cadence/designs/" cellName_routing )
+
+;库名↓
+routing_lib = hiCreateStringField(
+?prompt "Library Name"
+?name 'routing_lib
+?value libName_routing
+?defValue libName_routing
+)
+;单元名↓
+routing_cell = hiCreateStringField(
+?prompt "Cellview Name"
+?name 'routing_cell
+?value cellName_routing
+?defValue cellName_routing
+)
+;表格主体↓
+routing1Symbol = gensym( 'WindowForm ) 
+routing1 = hiCreateAppForm(
+?name routing1Symbol
+?formTitle "Routing"
+?callback  "mycallbackfunc_routing( hiGetCurrentForm() )"
+?dontBlock t
+?fields list( routing_lib routing_cell )
+?unmapAfterCB t )
+routing1->wid_routing = wid_routing ;
+routing1 ;;; my return value
+) ; let
+) ; procedure
+;点击后激活函数
+procedure( mycallbackfunc_routing( routing1 )
+let( ( wid_routing getlib_routing getcell_routing )
+;;; pick up current form values
+wid_routing = routing1->wid_routing ;;; user specified slot linking the form
+;;; to the window
+getlib_routing = routing1->routing_lib->value
+getcell_routing = routing1->routing_cell->value
+
+routing_info_out( getlib_routing getcell_routing )
+
+t ;;; my return value
+) ; let
+) ; procedure
+;打开窗口函数
+procedure( routing_window()
+let( ( wf_routing )
+wf_routing=routing_form(window(1))
+hiDisplayForm( wf_routing )
+)
+)
+;生成layout info，输出名称方向坐标三个信息文件
+procedure( routing_info_out( lib cell )
+let( ( f_name f_orient f_bbox )
+cellID = dbOpenCellViewByType( lib cell "layout" )
+cellname=cellID~>instances~>cellName
+bBox=cellID~>instances~>bBox
+orient=cellID~>instances~>orient
+f_name = outfile("./routing_name.txt" "w")
+
+foreach( item cellname
+	fprintf( f_name "%s\n" item )
+)
+close(f_name)
+
+f_orient = outfile("./routing_orient.txt" "w")
+
+foreach( item orient
+	fprintf( f_orient "%s\n" item )
+)
+close(f_orient)
+
+f_bbox = outfile("./routing_bbox.txt" "w")
+
+foreach( item bBox
+	fprintf( f_bbox "%L\n" item )
+)
+close(f_bbox)
+)
+)
+;--------------------------------------------------------------------------
+
 
 ;菜单栏设置
 menuItem_margins=hiCreateMenuItem( ;菜单栏1
@@ -495,7 +585,7 @@ menuItem_4=hiCreateMenuItem( ;菜单栏4
 menuItem_5=hiCreateMenuItem( ;菜单栏5
 ?name 'menu_5
 ?itemText "Routing"
-?callback "function_5" ;预留
+?callback "routing_window" ;
 )
 
 ;设置下拉菜单选项
