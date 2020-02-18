@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # coding: utf-8
 
-# In[16]:
+# In[60]:
 
 
 #class类型的单元库
@@ -11,9 +11,11 @@
 #注：面积为[a,b]->a*b,其中a为x方向长度，b为y方向长度
 #q2d和d2q暂时缺省，目测只会有一种版本
 #pad和aux也暂时缺省（fbias）
+#2020/2/18 添加类的orient和origin（xy）参数，新增moat的模型
+#后添加的统一端口序列：AI TI BI SI RI AO TO BO CO ABO AOA AOB AOC
+import re
 
-
-# In[21]:
+# In[61]:
 
 
 class jtl1j_a:#端口位置顺序为AI，AO
@@ -28,6 +30,14 @@ class jtl1j_a:#端口位置顺序为AI，AO
             port_type=kwargs['port_type']
         else:
             port_type="13"
+        if 'orient' in kwargs:
+            self.orient=kwargs['orient']
+        else:
+            self.orient="R0"
+        if 'xy' in kwargs:
+            self.xy=kwargs['xy']
+        else:
+            self.xy=[0,0]
         if(port_type=="13"):
             self.port_type=[1,3]
         elif(port_type=="14"):
@@ -36,7 +46,15 @@ class jtl1j_a:#端口位置顺序为AI，AO
             raise Exception("Undefined layout")
 
 
-# In[24]:
+# In[62]:
+
+
+c=jtl1j_a("inst1",'AI','AO','net1','net2',port_type='14',xy=[330,320])
+c.xy=[120,320]
+c.xy
+
+
+# In[63]:
 
 
 class jtl2j_a:#端口位置顺序为AI，AO
@@ -51,6 +69,14 @@ class jtl2j_a:#端口位置顺序为AI，AO
             port_type=kwargs['port_type']
         else:
             port_type="12"
+        if 'orient' in kwargs:
+            self.orient=kwargs['orient']
+        else:
+            self.orient="R0"
+        if 'xy' in kwargs:
+            self.xy=kwargs['xy']
+        else:
+            self.xy=[0,0]
         if(port_type=="12"):
             self.port_type=[1,2]
         elif(port_type=="14"):
@@ -73,7 +99,7 @@ class jtl2j_a:#端口位置顺序为AI，AO
             raise Exception("Undefined layout")
 
 
-# In[25]:
+# In[64]:
 
 
 class jtl3j_a:#端口位置顺序为AI，AO
@@ -88,6 +114,14 @@ class jtl3j_a:#端口位置顺序为AI，AO
             port_type=kwargs['port_type']
         else:
             port_type="15"
+        if 'orient' in kwargs:
+            self.orient=kwargs['orient']
+        else:
+            self.orient="R0"
+        if 'xy' in kwargs:
+            self.xy=kwargs['xy']
+        else:
+            self.xy=[0,0]
         if(port_type=="15"):
             self.port_type=[1,5]
         elif(port_type=="26"):
@@ -102,7 +136,7 @@ class jtl3j_a:#端口位置顺序为AI，AO
             raise Exception("Undefined layout")
 
 
-# In[26]:
+# In[65]:
 
 
 class jtl4j_a:#端口位置顺序为AI，AO,单元面积（形状）和端口位置关联
@@ -116,6 +150,14 @@ class jtl4j_a:#端口位置顺序为AI，AO,单元面积（形状）和端口位
             port_type=kwargs['port_type']
         else:
             port_type="12"
+        if 'orient' in kwargs:
+            self.orient=kwargs['orient']
+        else:
+            self.orient="R0"
+        if 'xy' in kwargs:
+            self.xy=kwargs['xy']
+        else:
+            self.xy=[0,0]
         if(port_type=="12"):
             self.port_type=[1,2]
             self.area=[2,2]
@@ -132,7 +174,7 @@ class jtl4j_a:#端口位置顺序为AI，AO,单元面积（形状）和端口位
             raise Exception("Undefined layout")
 
 
-# In[62]:
+# In[66]:
 
 
 class jtl_crs22:#端口位置顺序为AI，BI,AO,BO
@@ -151,6 +193,14 @@ class jtl_crs22:#端口位置顺序为AI，BI,AO,BO
             port_type=kwargs['port_type']
         else:
             port_type="2358"
+        if 'orient' in kwargs:
+            self.orient=kwargs['orient']
+        else:
+            self.orient="R0"
+        if 'xy' in kwargs:
+            self.xy=kwargs['xy']
+        else:
+            self.xy=[0,0]
         if(port_type=="2358"):
             self.port_type=[2,3,5,8]
         elif(port_type=="2853"):
@@ -171,7 +221,7 @@ class jtl_crs22:#端口位置顺序为AI，BI,AO,BO
             raise Exception("Undefined layout")
 
 
-# In[29]:
+# In[67]:
 
 
 class s1j2o_c:#端口位置顺序为AI，AOA,AOB
@@ -188,6 +238,14 @@ class s1j2o_c:#端口位置顺序为AI，AOA,AOB
             port_type=kwargs['port_type']
         else:
             port_type="135"
+        if 'orient' in kwargs:
+            self.orient=kwargs['orient']
+        else:
+            self.orient="R0"
+        if 'xy' in kwargs:
+            self.xy=kwargs['xy']
+        else:
+            self.xy=[0,0]
         if(port_type=="135"):
             self.port_type=[1,3,5]
         elif(port_type=="514"):
@@ -196,7 +254,7 @@ class s1j2o_c:#端口位置顺序为AI，AOA,AOB
             raise Exception("Undefined layout")
 
 
-# In[31]:
+# In[68]:
 
 
 class s2j2o_b:#端口位置顺序为AI，AOA,AOB
@@ -213,6 +271,14 @@ class s2j2o_b:#端口位置顺序为AI，AOA,AOB
             port_type=kwargs['port_type']
         else:
             port_type="135"
+        if 'orient' in kwargs:
+            self.orient=kwargs['orient']
+        else:
+            self.orient="R0"
+        if 'xy' in kwargs:
+            self.xy=kwargs['xy']
+        else:
+            self.xy=[0,0]
         if(port_type=="135"):
             self.port_type=[1,3,5]
         elif(port_type=="134"):
@@ -227,7 +293,7 @@ class s2j2o_b:#端口位置顺序为AI，AOA,AOB
             raise Exception("Undefined layout")
 
 
-# In[32]:
+# In[69]:
 
 
 class s2j3o_a:#端口位置顺序为AI，AOA,AOB,AOC
@@ -246,6 +312,14 @@ class s2j3o_a:#端口位置顺序为AI，AOA,AOB,AOC
             port_type=kwargs['port_type']
         else:
             port_type="1234"
+        if 'orient' in kwargs:
+            self.orient=kwargs['orient']
+        else:
+            self.orient="R0"
+        if 'xy' in kwargs:
+            self.xy=kwargs['xy']
+        else:
+            self.xy=[0,0]
         if(port_type=="1234"):
             self.port_type=[1,2,3,4]
         elif(port_type=="1235"):
@@ -268,7 +342,7 @@ class s2j3o_a:#端口位置顺序为AI，AOA,AOB,AOC
             raise Exception("Undefined layout")
 
 
-# In[33]:
+# In[70]:
 
 
 class s2j3o_c:#端口位置顺序为AI，AOA,AOB,AOC
@@ -287,6 +361,14 @@ class s2j3o_c:#端口位置顺序为AI，AOA,AOB,AOC
             port_type=kwargs['port_type']
         else:
             port_type="2345"
+        if 'orient' in kwargs:
+            self.orient=kwargs['orient']
+        else:
+            self.orient="R0"
+        if 'xy' in kwargs:
+            self.xy=kwargs['xy']
+        else:
+            self.xy=[0,0]
         if(port_type=="2345"):
             self.port_type=[2,3,4,5]
         elif(port_type=="2543"):
@@ -295,7 +377,7 @@ class s2j3o_c:#端口位置顺序为AI，AOA,AOB,AOC
             raise Exception("Undefined layout")
 
 
-# In[34]:
+# In[71]:
 
 
 class spl_jtl2j:#端口位置顺序为AI，AOA,AOB,AOC
@@ -316,13 +398,21 @@ class spl_jtl2j:#端口位置顺序为AI，AOA,AOB,AOC
             port_type=kwargs['port_type']
         else:
             port_type="18673"
+        if 'orient' in kwargs:
+            self.orient=kwargs['orient']
+        else:
+            self.orient="R0"
+        if 'xy' in kwargs:
+            self.xy=kwargs['xy']
+        else:
+            self.xy=[0,0]
         if(port_type=="18673"):
             self.port_type=[1,8,6,7,3]
         else:
             raise Exception("Undefined layout")
 
 
-# In[35]:
+# In[72]:
 
 
 class and_e:#端口位置顺序为AI,TI,BI,ABO
@@ -341,6 +431,14 @@ class and_e:#端口位置顺序为AI,TI,BI,ABO
             port_type=kwargs['port_type']
         else:
             port_type="1238"
+        if 'orient' in kwargs:
+            self.orient=kwargs['orient']
+        else:
+            self.orient="R0"
+        if 'xy' in kwargs:
+            self.xy=kwargs['xy']
+        else:
+            self.xy=[0,0]
         if(port_type=="1238"):
             self.port_type=[1,2,3,8]
         elif(port_type=="1238"):
@@ -351,7 +449,7 @@ class and_e:#端口位置顺序为AI,TI,BI,ABO
             raise Exception("Undefined layout")
 
 
-# In[36]:
+# In[73]:
 
 
 class cb_a:#端口位置顺序为AI,BI,ABO
@@ -368,6 +466,14 @@ class cb_a:#端口位置顺序为AI,BI,ABO
             port_type=kwargs['port_type']
         else:
             port_type="124"
+        if 'orient' in kwargs:
+            self.orient=kwargs['orient']
+        else:
+            self.orient="R0"
+        if 'xy' in kwargs:
+            self.xy=kwargs['xy']
+        else:
+            self.xy=[0,0]
         if(port_type=="124"):
             self.port_type=[1,2,4]
         elif(port_type=="125"):
@@ -382,7 +488,7 @@ class cb_a:#端口位置顺序为AI,BI,ABO
             raise Exception("Undefined layout")
 
 
-# In[37]:
+# In[74]:
 
 
 class d22_a:#端口位置顺序为AI,TI,TO
@@ -399,6 +505,14 @@ class d22_a:#端口位置顺序为AI,TI,TO
             port_type=kwargs['port_type']
         else:
             port_type="135"
+        if 'orient' in kwargs:
+            self.orient=kwargs['orient']
+        else:
+            self.orient="R0"
+        if 'xy' in kwargs:
+            self.xy=kwargs['xy']
+        else:
+            self.xy=[0,0]
         if(port_type=="146"):
             self.port_type=[1,4,6]
         elif(port_type=="175"):
@@ -415,7 +529,7 @@ class d22_a:#端口位置顺序为AI,TI,TO
             raise Exception("Undefined layout")
 
 
-# In[38]:
+# In[75]:
 
 
 class jandf_a:#端口位置顺序为AI,TI,BI,ABO
@@ -434,13 +548,21 @@ class jandf_a:#端口位置顺序为AI,TI,BI,ABO
             port_type=kwargs['port_type']
         else:
             port_type="420169"
+        if 'orient' in kwargs:
+            self.orient=kwargs['orient']
+        else:
+            self.orient="R0"
+        if 'xy' in kwargs:
+            self.xy=kwargs['xy']
+        else:
+            self.xy=[0,0]
         if(port_type=="420169"):
             self.port_type=[4,20,16,9]
         else:
             raise Exception("Undefined layout")
 
 
-# In[39]:
+# In[76]:
 
 
 class xor_b:#端口位置顺序为AI,TI,BI,TO
@@ -459,6 +581,14 @@ class xor_b:#端口位置顺序为AI,TI,BI,TO
             port_type=kwargs['port_type']
         else:
             port_type="1826"
+        if 'orient' in kwargs:
+            self.orient=kwargs['orient']
+        else:
+            self.orient="R0"
+        if 'xy' in kwargs:
+            self.xy=kwargs['xy']
+        else:
+            self.xy=[0,0]
         if(port_type=="1826"):
             self.port_type=[1,8,2,6]
         elif(port_type=="1836"):
@@ -469,7 +599,34 @@ class xor_b:#端口位置顺序为AI,TI,BI,TO
             raise Exception("Undefined layout")
 
 
-# In[72]:
+# In[77]:
+
+
+class moat:#没有端口的moat
+    area=[1,1]
+    def __init__ (self,instname,**kwargs):
+        self.instname=instname
+        if 'other_info' in kwargs:
+            other=kwargs['other_info']
+        else:
+            other=kwargs['other_info']
+        if 'orient' in kwargs:
+            self.orient=kwargs['orient']
+        else:
+            self.orient="R0"
+        if 'xy' in kwargs:
+            self.xy=kwargs['xy']
+        else:
+            self.xy=[0,0]
+
+
+# In[ ]:
+
+
+
+
+
+# In[78]:
 
 
 def read_instance(info):
@@ -603,12 +760,69 @@ def read_instance(info):
         wireBI=info[3][info[2].index('BI')]
         wireTO=info[3][info[2].index('TO')]
         model=xor_b(instname,portAI,wireAI,portTI,wireTI,portBI,wireBI,portTO,wireTO)
+    elif(modulename=='moat'):
+        model=moat(instname)
     else:
         raise Exception("No module matched")
     return model
 
 
-# In[1]:
+# In[79]:
+
+
+def process_port(string):#顺序出自上面的SFQlib规定 主要用来把版图截取的端口信息按照顺序重新规划并输出端口名和版图类型
+    port_sequence=['AI', 'TI', 'BI', 'SI', 'RI', 'AO', 'TO', 'BO' ,'CO', 'ABO', 'AOA', 'AOB', 'AOC']
+    num_list = re.findall('\d+', string)
+    string=string.upper()
+    port_index=[]
+    port_name=[]
+    for i in num_list:
+        index=string.find(i)
+        port_name.append(string[:index])
+        port_index.append(string[index])
+        string=string[index+1:]        
+    #print(port_index)
+    #print(port_name)
+    port_index_arranged=[]
+    port_name_arranged=[]
+    for k in port_sequence:
+        if k in port_name:
+            index_1=port_name.index(k)
+            port_index_arranged.append(port_index[index_1])
+            port_name_arranged.append(port_name[index_1])
+        else:
+            continue
+    #print(port_index_arranged)
+    #print(port_name_arranged)
+    port_type=[]
+    for i in port_index_arranged:
+        port_type.append(int(i))
+    return [port_name_arranged,port_type]
+#process_port("ai1bi3to6ti8")
+def layout_to_model(module_name,inst_name):#读取layout读出的module名和对应的inst名，获得一个来自SFQlib的model
+    if(module_name=="moat_1x1"):
+        module_name_cut="moat"
+    else:
+        index_1=module_name.find("_")
+        #print(index_1)
+        index_2=module_name[index_1+1:].find("_")
+        #print(module_name[index_1+1:])
+        #print(index_2)
+        module_name_cut=module_name[:index_1+index_2+1]
+        index_3=module_name.rfind("_")
+        port_info=module_name[index_3+1:]
+    port_info_processed=process_port(port_info)
+    info_combined=[module_name_cut,inst_name,port_info_processed[0],port_info_processed[0]]
+    layout_model=read_instance(info_combined)#read_instance函数来自SFQlib，和netlist reader同理，wire用版图端口名代替，并在此设置版图类型
+    layout_model.port_type=port_info_processed[1]
+    #print(port_info_processed[1])
+    #print(layout_model.port_type)
+    return layout_model
+    
+#k=info_to_model(t[0][0],t[4][0])
+
+
+# In[80]:
 
 
 #测试代码

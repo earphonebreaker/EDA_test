@@ -445,13 +445,22 @@ close(f)
 
 ;--------------------------routing-----------------------------------
 procedure( routing_form( wid_routing )
-let( ( routing_dir routing_lib routing_cell routing1Symbol routing1 )
+let( ( routing_plot routing_dir routing_lib routing_cell routing1Symbol routing1 )
 ;获取当前编辑的单元信息↓
 deCV_routing = deGetEditCellView()
 libName_routing = deCV_routing~>libName
 cellName_routing = deCV_routing~>cellName
 viewName_routing = deCV_routing~>viewName
 dirwithcellview_routing=strcat( "~/Cadence/designs/" cellName_routing )
+
+routing_plot=hiCreateRadioField(
+?name `radiofield1 
+?choices `("on" "off") 
+?prompt "Plot" 
+?value "on" 
+?defValue "on" 
+?callback nil
+)
 
 ;库名↓
 routing_lib = hiCreateStringField(
@@ -474,7 +483,7 @@ routing1 = hiCreateAppForm(
 ?formTitle "Routing"
 ?callback  "mycallbackfunc_routing( hiGetCurrentForm() )"
 ?dontBlock t
-?fields list( routing_lib routing_cell )
+?fields list( routing_lib routing_cell routing_plot)
 ?unmapAfterCB t )
 routing1->wid_routing = wid_routing ;
 routing1 ;;; my return value
@@ -482,15 +491,17 @@ routing1 ;;; my return value
 ) ; procedure
 ;点击后激活函数
 procedure( mycallbackfunc_routing( routing1 )
-let( ( wid_routing getlib_routing getcell_routing )
+let( ( wid_routing getlib_routing getcell_routing plot_op_routing)
 ;;; pick up current form values
 wid_routing = routing1->wid_routing ;;; user specified slot linking the form
 ;;; to the window
 getlib_routing = routing1->routing_lib->value
 getcell_routing = routing1->routing_cell->value
-
+plot_op_routing = routing1->radiofield1->value
+;print(plot_op_routing)
 routing_info_out( getlib_routing getcell_routing )
-
+routing_py( plot_op_routing )
+ipcBeginProcess("bash ./routing.sh")
 t ;;; my return value
 ) ; let
 ) ; procedure
@@ -501,7 +512,18 @@ wf_routing=routing_form(window(1))
 hiDisplayForm( wf_routing )
 )
 )
-;生成layout info，输出名称方向坐标三个信息文件
+
+;生成sh脚本
+procedure( routing_py( var )
+let( ( f_py_routing )
+f_py_routing = outfile("./routing.sh" "w")
+d=strcat("python plot_layout.py " var)
+fprintf( f_py_routing "%s" d )
+close(f_py_routing)
+)
+)
+
+;生成layout info
 procedure( routing_info_out( lib cell )
 let( ( f_name f_orient f_bbox )
 cellID = dbOpenCellViewByType( lib cell "layout" )
