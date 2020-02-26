@@ -114,19 +114,3 @@ endmodule
 // NETLIST TIME: Jun 27 16:38:15 2019
 `timescale 1ps / 1ps 
 
-module fb_b( CO, SO, AI, BI, CI, TI );
-
-output  CO, SO;
-input  CO, SO;
-
-and_e  ande0 ( .BI(net010), .ABO(net011),
-     .TI(net012), .AI(net013));
-jandf_a  jandfa0 ( .BI(net010), .ABO(net011),
-     .TI(net012), .AI(net013));
-jtl_crs22  jtlcs_2j_00 ( .BO(net049), .AO(net019),
-     .BI(net012), .AI(net013));
-d22_a  d22a0 ( .TO(net8), .TI(net2), .AI(net9));
-jtl_crs22  I76 ( .BO(net070), .AO(net0105),
-     .BI(net088), .AI(net087));
-
-endmodule

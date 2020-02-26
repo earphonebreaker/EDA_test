@@ -1,21 +1,24 @@
 ﻿#!/usr/bin/env python
 # coding: utf-8
 
-# In[60]:
+# In[1]:
 
 
 #class类型的单元库
 #2020/2/8 杨树澄
-#目前包含面积，实例名，端口信息等
+#目前包含面积，实例名，端口信息，跟库有关的函数等
 #注：端口位置（port_type）统一按照初始化给出的port顺序做映射
 #注：面积为[a,b]->a*b,其中a为x方向长度，b为y方向长度
 #q2d和d2q暂时缺省，目测只会有一种版本
 #pad和aux也暂时缺省（fbias）
 #2020/2/18 添加类的orient和origin（xy）参数，新增moat的模型
-#后添加的统一端口序列：AI TI BI SI RI AO TO BO CO ABO AOA AOB AOC
+#后添加的统一端口序列：'AI', 'TI', 'BI', 'SI', 'RI','RESET', 'AO', 'TO', 'BO' ,'CO', 'ABO', 'AOA', 'AOB', 'AOC'
 import re
+def port_sequence():
+    return ['AI', 'TI', 'BI', 'SI', 'RI','RESET', 'AO', 'TO', 'BO' ,'CO', 'ABO', 'AOA', 'AOB', 'AOC']
 
-# In[61]:
+
+# In[2]:
 
 
 class jtl1j_a:#端口位置顺序为AI，AO
@@ -46,15 +49,15 @@ class jtl1j_a:#端口位置顺序为AI，AO
             raise Exception("Undefined layout")
 
 
-# In[62]:
+# In[3]:
 
 
-c=jtl1j_a("inst1",'AI','AO','net1','net2',port_type='14',xy=[330,320])
-c.xy=[120,320]
-c.xy
+#c=jtl1j_a("inst1",'AI','AO','net1','net2',port_type='14',xy=[330,320])
+#c.xy=[120,320]
+#c.xy
 
 
-# In[63]:
+# In[4]:
 
 
 class jtl2j_a:#端口位置顺序为AI，AO
@@ -99,7 +102,7 @@ class jtl2j_a:#端口位置顺序为AI，AO
             raise Exception("Undefined layout")
 
 
-# In[64]:
+# In[5]:
 
 
 class jtl3j_a:#端口位置顺序为AI，AO
@@ -136,7 +139,7 @@ class jtl3j_a:#端口位置顺序为AI，AO
             raise Exception("Undefined layout")
 
 
-# In[65]:
+# In[6]:
 
 
 class jtl4j_a:#端口位置顺序为AI，AO,单元面积（形状）和端口位置关联
@@ -174,7 +177,7 @@ class jtl4j_a:#端口位置顺序为AI，AO,单元面积（形状）和端口位
             raise Exception("Undefined layout")
 
 
-# In[66]:
+# In[7]:
 
 
 class jtl_crs22:#端口位置顺序为AI，BI,AO,BO
@@ -221,7 +224,7 @@ class jtl_crs22:#端口位置顺序为AI，BI,AO,BO
             raise Exception("Undefined layout")
 
 
-# In[67]:
+# In[8]:
 
 
 class s1j2o_c:#端口位置顺序为AI，AOA,AOB
@@ -254,7 +257,7 @@ class s1j2o_c:#端口位置顺序为AI，AOA,AOB
             raise Exception("Undefined layout")
 
 
-# In[68]:
+# In[9]:
 
 
 class s2j2o_b:#端口位置顺序为AI，AOA,AOB
@@ -293,7 +296,7 @@ class s2j2o_b:#端口位置顺序为AI，AOA,AOB
             raise Exception("Undefined layout")
 
 
-# In[69]:
+# In[10]:
 
 
 class s2j3o_a:#端口位置顺序为AI，AOA,AOB,AOC
@@ -342,7 +345,7 @@ class s2j3o_a:#端口位置顺序为AI，AOA,AOB,AOC
             raise Exception("Undefined layout")
 
 
-# In[70]:
+# In[11]:
 
 
 class s2j3o_c:#端口位置顺序为AI，AOA,AOB,AOC
@@ -377,7 +380,7 @@ class s2j3o_c:#端口位置顺序为AI，AOA,AOB,AOC
             raise Exception("Undefined layout")
 
 
-# In[71]:
+# In[12]:
 
 
 class spl_jtl2j:#端口位置顺序为AI，AOA,AOB,AOC
@@ -412,7 +415,7 @@ class spl_jtl2j:#端口位置顺序为AI，AOA,AOB,AOC
             raise Exception("Undefined layout")
 
 
-# In[72]:
+# In[13]:
 
 
 class and_e:#端口位置顺序为AI,TI,BI,ABO
@@ -449,7 +452,7 @@ class and_e:#端口位置顺序为AI,TI,BI,ABO
             raise Exception("Undefined layout")
 
 
-# In[73]:
+# In[14]:
 
 
 class cb_a:#端口位置顺序为AI,BI,ABO
@@ -488,7 +491,7 @@ class cb_a:#端口位置顺序为AI,BI,ABO
             raise Exception("Undefined layout")
 
 
-# In[74]:
+# In[15]:
 
 
 class d22_a:#端口位置顺序为AI,TI,TO
@@ -529,7 +532,7 @@ class d22_a:#端口位置顺序为AI,TI,TO
             raise Exception("Undefined layout")
 
 
-# In[75]:
+# In[16]:
 
 
 class jandf_a:#端口位置顺序为AI,TI,BI,ABO
@@ -562,7 +565,7 @@ class jandf_a:#端口位置顺序为AI,TI,BI,ABO
             raise Exception("Undefined layout")
 
 
-# In[76]:
+# In[17]:
 
 
 class xor_b:#端口位置顺序为AI,TI,BI,TO
@@ -599,17 +602,17 @@ class xor_b:#端口位置顺序为AI,TI,BI,TO
             raise Exception("Undefined layout")
 
 
-# In[77]:
+# In[18]:
 
 
 class moat:#没有端口的moat
     area=[1,1]
     def __init__ (self,instname,**kwargs):
         self.instname=instname
-        if 'other_info' in kwargs:
-            other=kwargs['other_info']
+        if 'reserved_info' in kwargs:
+            self.reserved_info=kwargs['reserved_info']
         else:
-            other=kwargs['other_info']
+            self.reserved_info="reserved"
         if 'orient' in kwargs:
             self.orient=kwargs['orient']
         else:
@@ -620,13 +623,7 @@ class moat:#没有端口的moat
             self.xy=[0,0]
 
 
-# In[ ]:
-
-
-
-
-
-# In[78]:
+# In[19]:
 
 
 def read_instance(info):
@@ -767,11 +764,11 @@ def read_instance(info):
     return model
 
 
-# In[79]:
+# In[20]:
 
 
 def process_port(string):#顺序出自上面的SFQlib规定 主要用来把版图截取的端口信息按照顺序重新规划并输出端口名和版图类型
-    port_sequence=['AI', 'TI', 'BI', 'SI', 'RI', 'AO', 'TO', 'BO' ,'CO', 'ABO', 'AOA', 'AOB', 'AOC']
+    port_seq=port_sequence()
     num_list = re.findall('\d+', string)
     string=string.upper()
     port_index=[]
@@ -785,7 +782,7 @@ def process_port(string):#顺序出自上面的SFQlib规定 主要用来把版�
     #print(port_name)
     port_index_arranged=[]
     port_name_arranged=[]
-    for k in port_sequence:
+    for k in port_seq:
         if k in port_name:
             index_1=port_name.index(k)
             port_index_arranged.append(port_index[index_1])
@@ -800,6 +797,7 @@ def process_port(string):#顺序出自上面的SFQlib规定 主要用来把版�
     return [port_name_arranged,port_type]
 #process_port("ai1bi3to6ti8")
 def layout_to_model(module_name,inst_name):#读取layout读出的module名和对应的inst名，获得一个来自SFQlib的model
+    global port_info
     if(module_name=="moat_1x1"):
         module_name_cut="moat"
     else:
@@ -822,7 +820,141 @@ def layout_to_model(module_name,inst_name):#读取layout读出的module名和对
 #k=info_to_model(t[0][0],t[4][0])
 
 
-# In[80]:
+# In[ ]:
+
+
+def port_rearrangement(SFQmodel):#返回一个根据标准来的wire排序
+    model_dir=dir(SFQmodel)
+    len_dir=len(model_dir)
+    seq_port=port_sequence()
+    len_seq=len(seq_port)
+    wire_name=[]
+    for i in range(0,len_seq):
+        if "wire"+seq_port[i] in model_dir:
+            wire_name.append("wire"+seq_port[i])
+    return wire_name
+
+
+# In[21]:
+
+
+def port_direction(port_name):#判断端口是什么类型的
+    input_port=['AI', 'TI', 'BI', 'SI', 'RI','RESET']
+    output_port=['AO', 'TO', 'BO' ,'CO', 'ABO', 'AOA', 'AOB', 'AOC']
+    port_name=port_name.replace("wire","")
+    if port_name in input_port:
+        isOutput=False
+    else:
+        isOutput=True
+    return isOutput
+
+
+# In[1]:
+
+
+def port_location(number,area):#根据端口位置序号和面积类型来判断端口与原点的相对位置
+    x_index=area[0]
+    y_index=area[1]
+    if( number<=y_index ):
+        relative_coord=[0,(y_index-number)*30+15]
+        index=1
+    elif( number>y_index and number<=(x_index+y_index)):
+        relative_coord=[(number-y_index-1)*30+15,0]
+        index=2
+    elif( number>(x_index+y_index) and number<=(2*y_index+x_index)):
+        relative_coord=[x_index*30,(number-x_index-y_index-1)*30+15]
+        index=3
+    elif( number>(2*y_index+x_index) and number<=(2*(x_index+y_index)) ): 
+        relative_coord=[(2*(x_index+y_index)-number)*30+15,y_index*30]
+        index=4
+    else:
+        raise Error("Undefined port location")
+    return [relative_coord,index]
+
+#测试模块
+#area=[3,2]
+#for i in range(1,2*(area[0]+area[1])+1):
+#    print("端口序号为{0}".format(i))
+#    test=port_location(i,area)
+#    print(test)
+
+
+# In[3]:
+
+
+def get_abs_coord(orient,origin,relative_coord,index):#根据端口的相对坐标、版图原点和方向来确定端口在整个空间的绝对坐标
+    # 方向种类："R0","R90","R180","R270","MX","MY","MXR90","MYR90"
+    if(orient=="R0"):
+        absolute_coord=[origin[0]+relative_coord[0],origin[1]+relative_coord[1]]
+        abs_index=index
+    elif(orient=="R90"):
+        absolute_coord=[origin[0]-relative_coord[1],origin[1]+relative_coord[0]]
+        if(index==4):
+            abs_index=1
+        else:
+            abs_index=index+1
+    elif(orient=="R180"):
+        absolute_coord=[origin[0]-relative_coord[0],origin[1]-relative_coord[1]]
+        if(index==1 or index==2):
+            abs_index=index+2
+        else:
+            abs_index=index-2
+    elif(orient=="R270"):
+        absolute_coord=[origin[0]+relative_coord[1],origin[1]-relative_coord[0]]
+        if(index==1):
+            abs_index=4
+        else:
+            abs_index=index-1
+    elif(orient=="MX"):
+        absolute_coord=[origin[0]+relative_coord[0],origin[1]-relative_coord[1]]
+        if(index==2):
+            abs_index=4
+        elif(index==4):
+            abs_index=2
+        else:
+            abs_index=index
+    elif(orient=="MY"):
+        absolute_coord=[origin[0]-relative_coord[0],origin[1]+relative_coord[1]]
+        if(index==1):
+            abs_index=3
+        elif(index==3):
+            abs_index=1
+        else:
+            abs_index=index
+    elif(orient=="MXR90"):
+        absolute_coord=[origin[0]+relative_coord[1],origin[1]+relative_coord[0]]
+        if(index==1):
+            abs_index=2
+        elif(index==2):
+            abs_index=1
+        elif(index==3):
+            abs_index=4
+        else:
+            abs_index=3
+    elif(orient=="MYR90"):
+        absolute_coord=[origin[0]-relative_coord[1],origin[1]-relative_coord[0]]
+        if(index==1):
+            abs_index=4
+        elif(index==2):
+            abs_index=3
+        elif(index==3):
+            abs_index=2
+        else:
+            abs_index=1
+    else:
+        raise Error("Undefined orientation")
+    return [absolute_coord,abs_index]
+#测试代码
+#orient_list=["R0","R90","R180","R270","MX","MY","MXR90","MYR90"]
+#origin=[360,330]
+#relative_coord=[45, 60]#版图面积为2*2，端口位置7
+#for i in orient_list:
+#    print("当前版图方向为{0}".format(i))
+#    test=get_abs_coord(i,origin,relative_coord)
+#    print(test)
+
+
+# In[24]:
 
 
 #测试代码
