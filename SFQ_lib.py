@@ -1,7 +1,7 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[3]:
 
 
 #class类型的单元库
@@ -18,7 +18,7 @@ def port_sequence():
     return ['AI', 'TI', 'BI', 'SI', 'RI','RESET', 'AO', 'TO', 'BO' ,'CO', 'ABO', 'AOA', 'AOB', 'AOC']
 
 
-# In[2]:
+# In[4]:
 
 
 class jtl1j_a:#端口位置顺序为AI，AO
@@ -49,7 +49,7 @@ class jtl1j_a:#端口位置顺序为AI，AO
             raise Exception("Undefined layout")
 
 
-# In[3]:
+# In[5]:
 
 
 #c=jtl1j_a("inst1",'AI','AO','net1','net2',port_type='14',xy=[330,320])
@@ -57,7 +57,7 @@ class jtl1j_a:#端口位置顺序为AI，AO
 #c.xy
 
 
-# In[4]:
+# In[6]:
 
 
 class jtl2j_a:#端口位置顺序为AI，AO
@@ -102,7 +102,7 @@ class jtl2j_a:#端口位置顺序为AI，AO
             raise Exception("Undefined layout")
 
 
-# In[5]:
+# In[7]:
 
 
 class jtl3j_a:#端口位置顺序为AI，AO
@@ -139,7 +139,7 @@ class jtl3j_a:#端口位置顺序为AI，AO
             raise Exception("Undefined layout")
 
 
-# In[6]:
+# In[8]:
 
 
 class jtl4j_a:#端口位置顺序为AI，AO,单元面积（形状）和端口位置关联
@@ -177,7 +177,7 @@ class jtl4j_a:#端口位置顺序为AI，AO,单元面积（形状）和端口位
             raise Exception("Undefined layout")
 
 
-# In[7]:
+# In[9]:
 
 
 class jtl_crs22:#端口位置顺序为AI，BI,AO,BO
@@ -224,7 +224,7 @@ class jtl_crs22:#端口位置顺序为AI，BI,AO,BO
             raise Exception("Undefined layout")
 
 
-# In[8]:
+# In[10]:
 
 
 class s1j2o_c:#端口位置顺序为AI，AOA,AOB
@@ -257,7 +257,7 @@ class s1j2o_c:#端口位置顺序为AI，AOA,AOB
             raise Exception("Undefined layout")
 
 
-# In[9]:
+# In[11]:
 
 
 class s2j2o_b:#端口位置顺序为AI，AOA,AOB
@@ -296,7 +296,7 @@ class s2j2o_b:#端口位置顺序为AI，AOA,AOB
             raise Exception("Undefined layout")
 
 
-# In[10]:
+# In[12]:
 
 
 class s2j3o_a:#端口位置顺序为AI，AOA,AOB,AOC
@@ -345,7 +345,7 @@ class s2j3o_a:#端口位置顺序为AI，AOA,AOB,AOC
             raise Exception("Undefined layout")
 
 
-# In[11]:
+# In[13]:
 
 
 class s2j3o_c:#端口位置顺序为AI，AOA,AOB,AOC
@@ -380,7 +380,7 @@ class s2j3o_c:#端口位置顺序为AI，AOA,AOB,AOC
             raise Exception("Undefined layout")
 
 
-# In[12]:
+# In[14]:
 
 
 class spl_jtl2j:#端口位置顺序为AI，AOA,AOB,AOC
@@ -415,7 +415,7 @@ class spl_jtl2j:#端口位置顺序为AI，AOA,AOB,AOC
             raise Exception("Undefined layout")
 
 
-# In[13]:
+# In[15]:
 
 
 class and_e:#端口位置顺序为AI,TI,BI,ABO
@@ -452,7 +452,7 @@ class and_e:#端口位置顺序为AI,TI,BI,ABO
             raise Exception("Undefined layout")
 
 
-# In[14]:
+# In[16]:
 
 
 class cb_a:#端口位置顺序为AI,BI,ABO
@@ -491,7 +491,7 @@ class cb_a:#端口位置顺序为AI,BI,ABO
             raise Exception("Undefined layout")
 
 
-# In[15]:
+# In[17]:
 
 
 class d22_a:#端口位置顺序为AI,TI,TO
@@ -532,7 +532,7 @@ class d22_a:#端口位置顺序为AI,TI,TO
             raise Exception("Undefined layout")
 
 
-# In[16]:
+# In[18]:
 
 
 class jandf_a:#端口位置顺序为AI,TI,BI,ABO
@@ -565,7 +565,7 @@ class jandf_a:#端口位置顺序为AI,TI,BI,ABO
             raise Exception("Undefined layout")
 
 
-# In[17]:
+# In[19]:
 
 
 class xor_b:#端口位置顺序为AI,TI,BI,TO
@@ -602,7 +602,7 @@ class xor_b:#端口位置顺序为AI,TI,BI,TO
             raise Exception("Undefined layout")
 
 
-# In[18]:
+# In[20]:
 
 
 class moat:#没有端口的moat
@@ -623,7 +623,7 @@ class moat:#没有端口的moat
             self.xy=[0,0]
 
 
-# In[19]:
+# In[21]:
 
 
 def read_instance(info):
@@ -764,7 +764,7 @@ def read_instance(info):
     return model
 
 
-# In[20]:
+# In[22]:
 
 
 def process_port(string):#顺序出自上面的SFQlib规定 主要用来把版图截取的端口信息按照顺序重新规划并输出端口名和版图类型
@@ -820,7 +820,7 @@ def layout_to_model(module_name,inst_name):#读取layout读出的module名和对
 #k=info_to_model(t[0][0],t[4][0])
 
 
-# In[ ]:
+# In[23]:
 
 
 def port_rearrangement(SFQmodel):#返回一个根据标准来的wire排序
@@ -835,7 +835,7 @@ def port_rearrangement(SFQmodel):#返回一个根据标准来的wire排序
     return wire_name
 
 
-# In[21]:
+# In[24]:
 
 
 def port_direction(port_name):#判断端口是什么类型的
@@ -849,7 +849,7 @@ def port_direction(port_name):#判断端口是什么类型的
     return isOutput
 
 
-# In[1]:
+# In[25]:
 
 
 def port_location(number,area):#根据端口位置序号和面积类型来判断端口与原点的相对位置
@@ -879,7 +879,22 @@ def port_location(number,area):#根据端口位置序号和面积类型来判断
 #    print(test)
 
 
-# In[3]:
+# In[26]:
+
+
+def port_coord_to_map(coord,index):#绘制地图时端口坐标转回左下点
+    if(index==1):
+        new_coord=[int(coord[0]/30-1),int((coord[1]-15)/30)]
+    elif(index==2):
+        new_coord=[int((coord[0]-15)/30),int((coord[1]-30)/30)]
+    elif(index==3):
+        new_coord=[int((coord[0])/30),int((coord[1]-15)/30)]
+    elif(index==4):
+        new_coord=[int((coord[0]-15)/30),int((coord[1])/30)]
+    return new_coord
+
+
+# In[27]:
 
 
 def get_abs_coord(orient,origin,relative_coord,index):#根据端口的相对坐标、版图原点和方向来确定端口在整个空间的绝对坐标
@@ -954,7 +969,7 @@ def get_abs_coord(orient,origin,relative_coord,index):#根据端口的相对坐�
 #    print(test)
 
 
-# In[24]:
+# In[28]:
 
 
 #测试代码
