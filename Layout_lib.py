@@ -232,7 +232,7 @@ def direction_to_inst(input_direction,output_direction):#根据前后path的方�
         elif(output_direction==4):
             model="jtl1j_a_1x1ai1ao4"
             orient="MY"
-            origin=[-1,0]
+            origin=[1,0]
         else:
             raise Error("Wrong routing strategy: undefined direction -2")
     elif(input_direction==2):
@@ -269,7 +269,7 @@ def direction_to_inst(input_direction,output_direction):#根据前后path的方�
         if(output_direction==1):
             model="jtl1j_a_1x1ai1ao4"
             orient="R90"
-            origin=[-1,0]
+            origin=[1,0]
         elif(output_direction==3):
             model="jtl1j_a_1x1ai1ao4"
             orient="MXR90"
@@ -319,7 +319,7 @@ def path_to_inst(path,coord_info,index):#根据path和两个版图之间的信�
 # In[15]:
 
 
-def origin_to_blockpoint(area,origin,orient):
+def origin_to_blockpoint(area,origin,orient):#根据每个SFQmodel的面积，原点，方向，生成一系列在map上的block点（line不能穿过的地方）
     if(orient=="R0"):
         rel_block_point=[]
         for i in range(0,area[0]):
@@ -329,22 +329,22 @@ def origin_to_blockpoint(area,origin,orient):
         rel_block_point=[]
         for i in range(0,area[0]):
             for j in range(0,area[1]):
-                rel_block_point.append([int(origin[0]/30-j),int(origin[1]/30+i)])
+                rel_block_point.append([int((origin[0]-30)/30-j),int(origin[1]/30+i)])
     elif(orient=="R180"):
         rel_block_point=[]
         for i in range(0,area[0]):
             for j in range(0,area[1]):
-                rel_block_point.append([int(origin[0]/30-i),int(origin[1]/30-j)])
+                rel_block_point.append([int((origin[0]-30)/30-i),int((origin[1]-30)/30-j)])
     elif(orient=="R270"):
         rel_block_point=[]
         for i in range(0,area[0]):
             for j in range(0,area[1]):
-                rel_block_point.append([int(origin[0]/30+j),int(origin[1]/30-i)])
+                rel_block_point.append([int(origin[0]/30+j),int((origin[1]-30)/30-i)])
     elif(orient=="MX"):
         rel_block_point=[]
         for i in range(0,area[0]):
             for j in range(0,area[1]):
-                rel_block_point.append([int(origin[0]/30+i),int(origin[1]/30-j)])
+                rel_block_point.append([int(origin[0]/30+i),int((origin[1]-30)/30-j)])
     elif(orient=="MXR90"):
         rel_block_point=[]
         for i in range(0,area[0]):
@@ -354,14 +354,13 @@ def origin_to_blockpoint(area,origin,orient):
         rel_block_point=[]
         for i in range(0,area[0]):
             for j in range(0,area[1]):
-                rel_block_point.append([int(origin[0]/30-i),int(origin[1]/30+j)])
+                rel_block_point.append([int((origin[0]-30)/30-i),int(origin[1]/30+j)])
     elif(orient=="MYR90"):
         rel_block_point=[]
         for i in range(0,area[0]):
             for j in range(0,area[1]):
-                rel_block_point.append([int(origin[0]/30-j),int(origin[1]/30-i)])
+                rel_block_point.append([int((origin[0]-30)/30-j),int((origin[1]-30)/30-i)])
     return rel_block_point
-
 
 # In[16]:
 

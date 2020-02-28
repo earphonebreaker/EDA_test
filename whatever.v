@@ -17,9 +17,9 @@ specify
     specparam CDS_VIEWNAME = "schematic";
 endspecify
 
-and_e I0 ( .BI(BI), .ABO(net14), .TI(TI2),
+and_e I1 ( .BI(BI), .ABO(net14), .TI(TI2),
      .AI(AI2));
-cb_a I2 ( .ABO(ABO), .BI(net14), .AI(net13));
-d22_a I1 ( .TO(net13), .TI(TI1), .AI(AI1));
+cb_a I3 ( .ABO(ABO), .BI(net14), .AI(net13));
+d22_a I2 ( .TO(net13), .TI(TI1), .AI(AI1));
 
 endmodule
