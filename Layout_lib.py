@@ -288,14 +288,14 @@ def direction_to_inst(input_direction,output_direction):#根据前后path的方�
 # In[14]:
 
 
-def path_to_inst(path,coord_info,index):#根据path和两个版图之间的信息来建立il-dbcreate所需的字符串
+def path_to_inst(path,coord_info,index,name):#根据path和两个版图之间的信息来建立il-dbcreate所需的字符串
     script=[]
     len_path=len(path)
     first_check=route_direction(path[0],path[1])
     check_list=[first_check]
     inst_to_first=direction_to_inst(coord_info[0][1],first_check)
     xy_1=[(path[0][0]+inst_to_first[2][0])*30,(path[0][1]+inst_to_first[2][1])*30]
-    first_one=to_dbCreate(inst_to_first[0],"inst{0}".format(int((index-1)*100)),xy_1,inst_to_first[1])
+    first_one=to_dbCreate(inst_to_first[0],"{0}_{1}".format(name,index),xy_1,inst_to_first[1])#以上，先获取第一个line模块的信息
     script.append(first_one)
     for i in range(1,len_path-1):
         #print(path[i])
@@ -306,13 +306,13 @@ def path_to_inst(path,coord_info,index):#根据path和两个版图之间的信�
         #print(inst_to_line)
         xy_seq=[(path[i][0]+inst_to_line[2][0])*30,(path[i][1]+inst_to_line[2][1])*30]
         #print(xy_seq)
-        create_inst=to_dbCreate(inst_to_line[0],"inst{0}".format(int((index-1)*100+i)),xy_seq,inst_to_line[1])
-        script.append(create_inst)
+        create_inst=to_dbCreate(inst_to_line[0],"{0}_{1}".format(name,index+i),xy_seq,inst_to_line[1])
+        script.append(create_inst)#以上，获取中间模块的信息
     len_check=len(check_list)
     last_check=check_list[len_check-1]
     inst_to_last=direction_to_inst(last_check,last_check_index(coord_info[1][1]))
     xy_end=[(path[len_path-1][0]+inst_to_last[2][0])*30,(path[len_path-1][1]+inst_to_last[2][1])*30]
-    last_one=to_dbCreate(inst_to_last[0],"inst{0}".format(int((index-1)*100+len_path-1)),xy_end,inst_to_last[1])   
+    last_one=to_dbCreate(inst_to_last[0],"{0}_{1}".format(name,index+len_path-1),xy_end,inst_to_last[1])#以上，获取最后一个模块的信息
     script.append(last_one)
     return script
 
