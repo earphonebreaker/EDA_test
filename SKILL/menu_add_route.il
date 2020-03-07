@@ -74,7 +74,9 @@ getmax_margin = margin1->margin_max->value
 geteps_margin = margin1->margin_eps->value
 CalculateMargins(getdir_margin getmax_margin geteps_margin)
 pscan_netlist( getdir_margin getlib_margin getcell_margin )
-system("gnome-terminal -x bash -c 'sh ./margin.sh;exec bash;rm margin.sh'")
+system("gnome-terminal -x bash -c 'sh ./margin.sh;exec bash'")
+ipcSleep(1)
+ipcBeginProcess("rm margin.sh")
 t ;;; my return value
 ) ; let
 ) ; procedure
@@ -94,7 +96,7 @@ d=strcat( "python margins_for_SKILL.py main " max " " eps )
 e="cp /home/SIMIT/yangshucheng/files/margins_for_SKILL.py ./" ;此处为复制到仿真目录的margin脚本地址
 fprintf( f "%s\n" c )
 fprintf( f "%s\n" e )
-fprintf( f "%s" d )
+fprintf( f "%s\n" d )
 close(f)
 )
 )
@@ -251,7 +253,8 @@ getmin2 = timing1->timing_min2->value
 CalculateTiming(getdir_timing getparam1 getstep1 getmax1 getmin1 getparam2 getstep2 getmax2 getmin2)
 pscan_netlist( getdir_timing getlib_timing getcell_timing )
 ipcBeginProcess("bash timing.sh") ;ipc函数后台运行，不显示在terminal内
-system("rm timing.sh") 
+ipcSleep(1)
+ipcBeginProcess("rm timing.sh")
 t ;;; my return value
 ) ; let
 ) ; procedure
@@ -335,6 +338,8 @@ getcell_psui = psui1->psui_cell->value
 PsuiInitialize(getdir_psui)
 pscan_netlist( getdir_psui getlib_psui getcell_psui )
 system("gnome-terminal -x bash -c 'sh ./psui.sh;exec bash;rm psui.sh'")
+ipcSleep(1)
+ipcBeginProcess("rm psui.sh")
 t ;;; my return value
 ) ; let
 ) ; procedure
@@ -416,6 +421,8 @@ getcell_simulate = simulate1->simulate_cell->value
 SFQSimulate(getdir_simulate)
 pscan_netlist( getdir_simulate getlib_simulate getcell_simulate )
 system("gnome-terminal -x bash -c 'sh ./simulate.sh;exec bash;rm ./simulate.sh'")
+ipcSleep(1)
+ipcBeginProcess("rm simulate.sh")
 t ;;; my return value
 ) ; let
 ) ; procedure
@@ -632,7 +639,7 @@ menuItem_simulate=hiCreateMenuItem( ;菜单栏3
 
 ;设置下拉菜单选项
 hiCreatePulldownMenu(
-'trSubMenuA
+'Presim_SFQtool
 ""
 list(
 menuItem_simulate
@@ -642,74 +649,68 @@ menuItem_timing
 )
 )
 ;设置带slider的菜单选项-前仿
-sliderMenuItem_A = hiCreateSliderMenuItem( 
-?name 'menu_A
+Presim_Slider_SFQ = hiCreateSliderMenuItem( 
+?name 'Presim_SFQ
 ?itemText "front-end"
-?subMenu trSubMenuA
+?subMenu Presim_SFQtool
 )
 ;设置分割线
-separator_1=hiCreateSeparatorMenuItem(
-?name 'menu_S
+separator_SFQtool=hiCreateSeparatorMenuItem(
+?name 'spt_SFQtool
 )
 ;后仿菜单选项卡
-menuItem_4=hiCreateMenuItem( ;菜单栏4
-?name 'menu_4
+menuItem_placement=hiCreateMenuItem( ;菜单栏4
+?name 'Backend_Place_SFQtool
 ?itemText "Placement"
 ?callback "function_4" ;预留
 )
-menuItem_5=hiCreateMenuItem( ;菜单栏5
-?name 'menu_5
+menuItem_routing=hiCreateMenuItem( ;菜单栏5
+?name 'Backend_Route_SFQtool
 ?itemText "Routing"
 ?callback "routing_window" ;
 )
 
 ;设置下拉菜单选项
 hiCreatePulldownMenu(
-'trSubMenuB
+'Backend_SFQtool
 ""
 list(
-menuItem_4
-menuItem_5
+menuItem_placement
+menuItem_routing
 )
 )
 ;设置带slider的菜单选项
-sliderMenuItem_B = hiCreateSliderMenuItem( 
-?name 'menu_B
+Backend_Slider_SFQ = hiCreateSliderMenuItem( 
+?name 'Backend_SFQ
 ?itemText "back-end"
-?subMenu trSubMenuB
+?subMenu Backend_SFQtool
 )
 
-menuItem_B= hiCreateMenuItem(
-?name 'menu_B
-?itemText "back-end"
-?callback "function_B"
-)
-
-menuItem_C= hiCreateMenuItem(
-?name 'menu_C
+Menu_other_SFQtool= hiCreateMenuItem(
+?name 'menu_other_sfqtool
 ?itemText "other"
 ?callback "function_C"
 )
 
 hiCreatePulldownMenu(
-'trPulldownMenu
+'SFQ_pulldown
 "SFQtool"
-list( sliderMenuItem_A sliderMenuItem_B  separator_1 menuItem_C )
+list( Presim_Slider_SFQ Backend_Slider_SFQ  separator_SFQtool Menu_other_SFQtool )
 )
 ;添加至layout窗口
 ;------------------------------------------------------------------------------
-hiInsertBannerMenu((hiGetCIWindow) 'trPulldownMenu (hiGetNumMenus (hiGetCIWindow)));
-procedure(add_layout_menu(args)
-hiInsertBannerMenu((getCurrentWindow) 'trPulldownMenu (hiGetNumMenus (getCurrentWindow)));
+hiInsertBannerMenu((hiGetCIWindow) 'SFQ_pulldown (hiGetNumMenus (hiGetCIWindow)));
+procedure(add_layout_menu_SFQ(args)
+hiInsertBannerMenu((getCurrentWindow) 'SFQ_pulldown (hiGetNumMenus (getCurrentWindow)));
 )
-deRegUserTriggers("maskLayout"  nil nil 'add_layout_menu)
+deRegUserTriggers("maskLayout"  nil nil 'add_layout_menu_SFQ)
 ;------------------------------------------------------------------------------
 
 ;添加至schematic窗口
 ;------------------------------------------------------------------------------
-hiInsertBannerMenu((hiGetCIWindow) 'trPulldownMenu (hiGetNumMenus (hiGetCIWindow)));
-procedure(add_schematic_menu(args)
-hiInsertBannerMenu((getCurrentWindow) 'trPulldownMenu (hiGetNumMenus (getCurrentWindow)));
+hiInsertBannerMenu((hiGetCIWindow) 'SFQ_pulldown (hiGetNumMenus (hiGetCIWindow)));
+procedure(add_schematic_menu_SFQ(args)
+hiInsertBannerMenu((getCurrentWindow) 'SFQ_pulldown (hiGetNumMenus (getCurrentWindow)));
 )
-deRegUserTriggers("schematic"  nil nil 'add_schematic_menu)
+deRegUserTriggers("schematic"  nil nil 'add_schematic_menu_SFQ)
 ;------------------------------------------------------------------------------
