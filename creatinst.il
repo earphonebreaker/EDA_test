@@ -1,4 +1,4 @@
-cellID=dbOpenCellViewByType("ysc_layout2" "auto_route" "layout" "maskLayout")
+cellID=dbOpenCellViewByType("ysc_layout" "auto_route" "layout" "maskLayout")
 dbCreateParamInstByMasterName(cellID "ysc03_lib" "jtl1j_a_1x1ai1ao3" "layout" "I3_I2_0" list(0 120) "R0")
 dbCreateParamInstByMasterName(cellID "ysc03_lib" "jtl1j_a_1x1ai1ao3" "layout" "I3_I2_1" list(30 120) "R0")
 dbCreateParamInstByMasterName(cellID "ysc03_lib" "jtl1j_a_1x1ai1ao3" "layout" "I3_I2_2" list(60 120) "R0")

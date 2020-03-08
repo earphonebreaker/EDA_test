@@ -6,6 +6,11 @@
 
 #2020/2/27 杨树澄
 #优化好的A star算法库
+import time
+from SFQ_lib import *
+from Layout_lib import *
+from Netlist_lib import *
+from Param_lib import *
 
 
 # In[2]:
@@ -35,7 +40,14 @@ class Map():
         for i in range(0,block_list_len):
             x=block_list[i][0]
             y=block_list[i][1]
-            self.map[y][x] = 1;            
+            self.map[y][x] = 1;
+            
+    def clrBlock(self,block_list): #清除block list
+        block_list_len=len(block_list)
+        for i in range(0,block_list_len):
+            x=block_list[i][0]
+            y=block_list[i][1]
+            self.map[y][x] = 0;
         
     def showMap(self):
         print("+" * (3 * self.width + 2))
@@ -146,11 +158,102 @@ def AStarSearch(map, source, dest):
     return path
 
 
-# In[2]:
+# In[5]:
+
+
+def map_info(file_dir): #从routing信息和netlist信息来获取制作map的参数
+    netlist_info=read_netlist(file_dir)#读netlist
+    dict_info=inmod_inst_to_wire(netlist_info[3][0])#netlist信息写入dict
+    connection=read_connection(netlist_info,dict_info)#获取connection信息
+    connection_info=connect_info_process(connection)#整理connection信息
+    file_list=["routing_name.txt","routing_orient.txt","routing_bbox.txt", "routing_xy.txt","routing_inst.txt"]
+    layout_info=layout_info_summary(file_list)#读取layout信息
+    list_layout_info=read_layout(file_list)#读取layout信息2
+    dict_layout_info=layout_to_dict(layout_info)#整理layout信息写入dict
+    coord_info=get_route_coord(connection_info,dict_layout_info)#获取routing的坐标信息
+    x_0=[x[0] for x in list_layout_info[2]]#以下：获取layout中的最大xy坐标和最小xy坐标，用于确定map的长宽
+    x_2=[x[2] for x in list_layout_info[2]]
+    y_1=[y[1] for y in list_layout_info[2]]
+    y_3=[y[3] for y in list_layout_info[2]]
+    x_max=max([max(x_0),max(x_2)])
+    y_max=max([max(y_1),max(y_3)])
+    x_min=min([min(x_0),min(x_2)])
+    y_min=min([min(y_1),min(y_3)])
+    width=int((x_max-x_min)/layout_unit_len+map_enlarge)#设置map的宽度，并读取param_lib里的map_enlarge参数来扩充map
+    height=int((y_max-y_min)/layout_unit_len+map_enlarge)#同上，设置高度
+    origin=[x_min,y_min]#获取map的初始原点
+    #print(width,height)
+    #print(origin)
+    map_origin=[int(x_min/layout_unit_len-map_offset),int(y_min/layout_unit_len-map_offset)]#获得一个原点为00的，map相对于layout的坐标（这里2和上面的4以后要调整）
+    #print(map_origin)
+    return [width,height,layout_info,map_origin,coord_info,connection_info]#返回所需信息
+#map_info(File_dir)
+
+
+# In[7]:
+
+
+def mono_map_search(file_dir,lib,cell,display):#单层布线函数
+    info=map_info(file_dir)#通过map_info函数整理所需的信息
+    width=info[0]
+    height=info[1]
+    layout_map=Map(width,height)#创立一个单map
+    #layout_map.showMap()
+    layout_info=info[2]
+    len_layout=len(layout_info)
+    map_origin=info[3]
+    for i in range(0,len_layout):#开始设置map的block点
+        block_point=origin_to_blockpoint(layout_info[i].area,layout_info[i].xy,layout_info[i].orient)#设置block点的原始参考坐标
+        abs_point=get_abs_block_point(map_origin,block_point)#获取绝对坐标
+        layout_map.setBlock(abs_point)#封锁inst所在的点
+    #开始寻路
+    coord_info=info[4]
+    connection_info=info[5]
+    coord_len=len(coord_info)
+    text=open("./creatinst.il",'w+')#打开一个creatinst.il文件用于skill读取
+    cellid='''cellID=dbOpenCellViewByType("{0}" "{1}" "layout" "maskLayout")'''.format(lib,cell)#这里以后改，dbopen函数
+    print(cellid,file=text)
+    for i in range(0,coord_len):#????coord怎么和layout def里面的不一样
+        #print(coord_info[i])
+        port_1_temp=port_coord_to_map(coord_info[i][0][0],coord_info[i][0][1])#获取第一个端口坐标 map中的
+        #print(port_1_temp)
+        port_1=[port_1_temp[0]-map_origin[0],port_1_temp[1]-map_origin[1]]#获取第一个端口的绝对坐标 map中的
+        #print(port_1)
+        port_2_temp=port_coord_to_map(coord_info[i][1][0],coord_info[i][1][1])#同上
+        #print(port_2_temp)
+        port_2=[port_2_temp[0]-map_origin[0],port_2_temp[1]-map_origin[1]]#同上上
+        #print(port_2)
+        source=(port_2[0],port_2[1])#获取出发点
+        dest=(port_1[0],port_1[1])#获取终点
+        path=AStarSearch(layout_map,source,dest)#A星算path
+        #print(path)
+        #layout_map.showMap()
+        layout_map.setBlock(path)#把这条path添加到库中
+        temp=[coord_info[i][1],coord_info[i][0]]#只能用temp来重新排一下coord_info了
+        #print(temp)
+        new_path=[]
+        len_path=len(path)
+        for k in range(0,len_path):
+            new_path.append([path[k][0]+map_origin[0],path[k][1]+map_origin[1]])#把还原的path坐标写入new path中
+        #print(new_path)
+        script=path_to_inst(new_path,temp,0,connection_info[i][0]+'_'+connection_info[i][2])#输入path 获取dbcreate脚本
+        len_script=len(script)
+        for j in range(0,len_script):
+            print(script[j],file=text)#将dbcreate脚本字符串写进text中输出
+        if(display==1):
+            print("source:{0} to destination:{1}".format(source,dest))
+            print("path:{0}".format(new_path))
+            layout_map.showMap()
+    text.close()
+#display=1
+#mono_map_search("whatever.v",'ysc_layout2','auto_route',display)
+
+
+# In[3]:
 
 
 #测试模块
-'''map_width=10
+map_width=10
 map_height=10
 map2=Map(map_width,map_height)
 map2.setBlock([[1,1],[1,2],[1,3],[2,1],[2,2],[2,3],[3,1],[3,2],[3,3],[2,5],[2,6],[3,5],[3,6],[8,3],[9,3],[9,4],[8,4]])
@@ -164,7 +267,7 @@ print(path1)
 map2.setBlock(path1)
 path2=AStarSearch(map2,source2,dest2)
 map2.showMap()
-print(path2)'''
+print(path2)
 
 
 # In[ ]:
