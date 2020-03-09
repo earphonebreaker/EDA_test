@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # coding: utf-8
 
 # In[1]:
@@ -41,6 +41,28 @@ class Map():
             x=block_list[i][0]
             y=block_list[i][1]
             self.map[y][x] = 1;
+
+    def setBlock_multi(self,block_list): #block list 储存已经存在的单元位置信息
+        block_list_len=len(block_list)
+        x_first=block_list[0][0]
+        y_first=block_list[0][1]
+        self.map[y_first][x_first]=1
+        x_last=block_list[block_list_len-1][0]
+        y_last=block_list[block_list_len-1][1]
+        self.map[y_last][x_last]=1
+        for i in range(1,block_list_len-1):
+            x_prev=block_list[i-1][0]
+            y_prev=block_list[i-1][1]
+            x_next=block_list[i+1][0]
+            y_next=block_list[i+1][1]
+            x=block_list[i][0]
+            y=block_list[i][1]
+            if(abs(x_prev-x_next)==1 and abs(y_prev-y_next)==1):
+                self.map[y][x]=1
+            elif(self.map[y_prev][x_prev]==2):
+                self.map[y][x]=1
+            else:
+                self.map[y][x]=2
             
     def clrBlock(self,block_list): #清除block list
         block_list_len=len(block_list)
@@ -248,29 +270,86 @@ def mono_map_search(file_dir,lib,cell,display):#单层布线函数
 #display=1
 #mono_map_search("whatever.v",'ysc_layout2','auto_route',display)
 
-
+def multi_map_search(file_dir,lib,cell,display,layer_num):
+    info=map_info(file_dir)
+    width=info[0]
+    height=info[1]
+    layout_info=info[2]
+    map_origin=info[3]
+    coord_info=info[4]
+    connection_info=info[5]
+    len_layout=len(layout_info)
+    coord_len=len(coord_info)
+    #创立多map
+    map_list=[]
+    for i in range(0,layer_num):#将封好的map写入多map列表
+        layout_map=Map(width,height)
+        for j in range(0,len_layout):#屏蔽inst所在区域
+            block_point=origin_to_blockpoint(layout_info[j].area,layout_info[j].xy,layout_info[j].orient)
+            abs_point=get_abs_block_point(map_origin,block_point)
+            layout_map.setBlock(abs_point)
+        for k in range(0,coord_len):#封锁端口
+            port_1_temp=port_coord_to_map(coord_info[k][0][0],coord_info[k][0][1])#获取第一个端口坐标 map中的
+            port_1=[port_1_temp[0]-map_origin[0],port_1_temp[1]-map_origin[1]]#获取第一个端口的绝对坐标 map中的
+            port_2_temp=port_coord_to_map(coord_info[k][1][0],coord_info[k][1][1])#同上
+            port_2=[port_2_temp[0]-map_origin[0],port_2_temp[1]-map_origin[1]]#同上上
+            block_source=[port_2[0],port_2[1]]#获取出发点
+            block_dest=[port_1[0],port_1[1]]#获取终点
+            layout_map.setBlock([block_source,block_dest])
+        map_list.append(layout_map)
+        #map_list[i].showMap()
+    #打开createinst.il   
+    text=open("./createinst.il",'w+')
+    cellid='''cellID=dbOpenCellViewByType("{0}" "{1}" "layout" "maskLayout")'''.format(lib,cell)#这里以后改，dbopen函数
+    print(cellid,file=text)
+    
+    for i in range(0,coord_len):#????coord怎么和layout def里面的不一样
+        port_1_temp=port_coord_to_map(coord_info[i][0][0],coord_info[i][0][1])#获取第一个端口坐标 map中的
+        port_1=[port_1_temp[0]-map_origin[0],port_1_temp[1]-map_origin[1]]#获取第一个端口的绝对坐标 map中的
+        port_2_temp=port_coord_to_map(coord_info[i][1][0],coord_info[i][1][1])#同上
+        port_2=[port_2_temp[0]-map_origin[0],port_2_temp[1]-map_origin[1]]#同上上
+        source=(port_2[0],port_2[1])#获取出发点
+        dest=(port_1[0],port_1[1])#获取终点
+        path=[]
+        len_path=[]
+        for j in range(0,layer_num):#对多个map循环查找最优路径
+            map_list[j].clrBlock([[port_2[0],port_2[1]],[port_1[0],port_1[1]]])#先解开端口的block
+            path_temp=AStarSearch(map_list[j],source,dest)#A星算path
+            if(len(path_temp)==0):#判断一下，如果path找不到，长度应该为0，所以这里赋值正无穷
+                len_path_temp=inf
+            else:
+                len_path_temp=len(path_temp)#记录这个map的path的长度
+            path.append(path_temp)#加入到总path中
+            len_path.append(len_path_temp)#加入到总len_path中
+            map_list[j].setBlock([[port_2[0],port_2[1]],[port_1[0],port_1[1]]])#把端口封上
+            
+        min_path_index=len_path.index(min(len_path))#获取几层之中最短的那一层  
+        min_path=path[min_path_index]#获取最短的路径
+        print("----------------------------------------------------------------")
+        #print(path[0])
+        #print(min_path_index)
+        #print(min_path)
+        for j in range(0,layer_num):
+            if(j==min_path_index):
+                map_list[j].setBlock(min_path)
+            else:
+                map_list[j].setBlock_multi(min_path)
+            print("the {0}th layer".format(j))
+            map_list[j].showMap()
+        
+        temp=[coord_info[i][1],coord_info[i][0]]#只能用temp来重新排一下coord_info了            
+        new_path=[]
+        len_min_path=len(min_path)
+        for k in range(0,len_min_path):
+            new_path.append([min_path[k][0]+map_origin[0],min_path[k][1]+map_origin[1]])#把还原的min_path坐标写入new path中
+        #print(new_path)
+        script=path_to_inst(new_path,temp,0,connection_info[i][0]+'_'+connection_info[i][2],min_path_index)#输入path 获取dbcreate脚本
+        len_script=len(script)
+        for j in range(0,len_script):
+            print(script[j],file=text)#将dbcreate脚本字符串写进text中输出
+    text.close()    
 # In[3]:
 
-
-#测试模块
-map_width=10
-map_height=10
-map2=Map(map_width,map_height)
-map2.setBlock([[1,1],[1,2],[1,3],[2,1],[2,2],[2,3],[3,1],[3,2],[3,3],[2,5],[2,6],[3,5],[3,6],[8,3],[9,3],[9,4],[8,4]])
-source1=(4,2)
-dest1=(7,3)
-source2=(4,5)
-dest2=(7,4)
-path1=AStarSearch(map2,source1,dest1)
-map2.showMap()
-print(path1)
-map2.setBlock(path1)
-path2=AStarSearch(map2,source2,dest2)
-map2.showMap()
-print(path2)
-
-
-# In[ ]:
 
 
 

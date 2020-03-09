@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # coding: utf-8
 
 # In[1]:
@@ -177,7 +177,7 @@ def to_dbCreate(model,instname,coord,orient):#dbCreate生成模块
     "ysc03_lib" "jtl_crs22_2x2_bi1ai2bo3ao5" "layout" "inst1" list(120 120) "R0")
     jtl1j_a_1x1ai1ao3
     '''
-    dbcreate= "dbCreateParamInstByMasterName(cellID \"ysc03_lib\" \"{0}\" \"layout\" \"{1}\" list({2} {3}) \"{4}\")".format(model,instname,coord[0],coord[1],orient)
+    dbcreate= "dbCreateParamInstByMasterName(cellID \"{5}\" \"{0}\" \"layout\" \"{1}\" list({2} {3}) \"{4}\")".format(model,instname,coord[0],coord[1],orient,route_lib)
     #print(dbcreate)
     #这里例化的库，以后做成global parameter写入参数表
     return dbcreate

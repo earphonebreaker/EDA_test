@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # coding: utf-8
 
 # In[1]:
@@ -24,9 +24,9 @@ map_offset=2
 # In[2]:
 
 
-layer_straight_line=["jtl1j_a_1x1ai1ao3","ptl1j_a_1x1ai1ao3"]
-layer_corner_line=["jtl1j_a_1x1ai1ao4","ptl1j_a_1x1ai1ao4"]
-
+layer_straight_line=["ptl_13_ip1","ptl_13_mn0"]
+layer_corner_line=["ptl_14_ip1","ptl_14_mn0"]
+route_lib="ysc_layout_ts"
 
 # In[ ]:
 
