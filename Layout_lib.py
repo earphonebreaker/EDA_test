@@ -1,14 +1,14 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 
 #2020/2/27 杨树澄
 #整合layout相关的函数库
 
 
-# In[1]:
+# In[3]:
 
 
 from pylab import *
@@ -18,7 +18,7 @@ import sys
 import re
 
 
-# In[2]:
+# In[4]:
 
 
 def floor_to_decimal(num): #把bBox误差出来的小数都去掉
@@ -26,7 +26,7 @@ def floor_to_decimal(num): #把bBox误差出来的小数都去掉
     return int(round(num/index))*index #返回一个整数型的值
 
 
-# In[3]:
+# In[5]:
 
 
 def read_layout(filename): #io接口，用来读取SKILL输出的版图信息
@@ -73,7 +73,7 @@ def read_layout(filename): #io接口，用来读取SKILL输出的版图信息
     return [instance_info, orient_info, bBox_info,xy_info,inst_name_info]
 
 
-# In[4]:
+# In[6]:
 
 
 def layout_info_summary(filename):#数据顺序：model，方向，bBox，起始点,汇总到一个info变量里，每一个model的前述所有信息写入对应的class
@@ -88,7 +88,7 @@ def layout_info_summary(filename):#数据顺序：model，方向，bBox，起始
     return layout_info_out
 
 
-# In[5]:
+# In[7]:
 
 
 def connect_info_process(connection): #重新整理netlist reader输出的互联信息
@@ -99,7 +99,7 @@ def connect_info_process(connection): #重新整理netlist reader输出的互联
     return connection_info
 
 
-# In[6]:
+# In[8]:
 
 
 def port_rearrangement(SFQmodel):#重新整理SFQ model中的port顺序（按照SFQ lib 里给出的port sequence）
@@ -114,7 +114,7 @@ def port_rearrangement(SFQmodel):#重新整理SFQ model中的port顺序（按照
     return wire_name
 
 
-# In[7]:
+# In[9]:
 
 
 def layout_to_dict(layout_info):#把layout中的信息整理到dictionary中，以便于查找两个互联器件的信息
@@ -138,7 +138,7 @@ def layout_to_dict(layout_info):#把layout中的信息整理到dictionary中，�
     return dict_inst_to_wire
 
 
-# In[8]:
+# In[10]:
 
 
 def get_route_coord(connection_info,dict_inst_to_wire):#获取port到port的绝对坐标
@@ -168,7 +168,7 @@ def get_route_coord(connection_info,dict_inst_to_wire):#获取port到port的绝�
     return routing_coord
 
 
-# In[9]:
+# In[11]:
 
 
 def to_dbCreate(model,instname,coord,orient):#dbCreate生成模块
@@ -183,7 +183,7 @@ def to_dbCreate(model,instname,coord,orient):#dbCreate生成模块
     return dbcreate
 
 
-# In[10]:
+# In[12]:
 
 
 def route_direction(first_location,second_location):#根据例化前后两个layout_unit_len单位单元的信息来确定path的方向
@@ -203,7 +203,7 @@ def route_direction(first_location,second_location):#根据例化前后两个lay
     return fir_to_sec
 
 
-# In[11]:
+# In[13]:
 
 
 def last_check_index(index):#替换掉目标port的位置信息
@@ -218,7 +218,7 @@ def last_check_index(index):#替换掉目标port的位置信息
     return last_index
 
 
-# In[12]:
+# In[14]:
 
 
 def direction_to_inst(input_direction,output_direction,layer):#根据前后path的方向来确定输出到dbcreate中的模型，方向，相对原点等信息
@@ -287,7 +287,7 @@ def direction_to_inst(input_direction,output_direction,layer):#根据前后path�
     return [model,orient,origin]
 
 
-# In[1]:
+# In[15]:
 
 
 def path_to_inst(path,coord_info,index,name,layer):#根据path和两个版图之间的信息来建立il-dbcreate所需的字符串
@@ -319,50 +319,98 @@ def path_to_inst(path,coord_info,index,name,layer):#根据path和两个版图之
     return script
 
 
-# In[14]:
+# In[16]:
 
 
 def origin_to_blockpoint(area,origin,orient):#根据每个SFQmodel的面积，原点，方向，生成一系列在map上的block点（line不能穿过的地方）
+    x=area[0]+2
+    y=area[1]+2
     if(orient=="R0"):
         rel_block_point=[]
-        for i in range(0,area[0]):
-            for j in range(0,area[1]):
-                rel_block_point.append([int(origin[0]/layout_unit_len+i),int(origin[1]/layout_unit_len+j)])
+        for i in range(0,x):
+            for j in range(0,y):
+                rel_block_point.append([int(origin[0]/layout_unit_len-1+i),int(origin[1]/layout_unit_len-1+j)])
+        rel_block_point.remove([int(origin[0]/layout_unit_len-1),int(origin[1]/layout_unit_len-1)])
+        rel_block_point.remove([int(origin[0]/layout_unit_len-1+x-1),int(origin[1]/layout_unit_len-1+y-1)])
+        rel_block_point.remove([int(origin[0]/layout_unit_len-1+x-1),int(origin[1]/layout_unit_len-1)])
+        rel_block_point.remove([int(origin[0]/layout_unit_len-1),int(origin[1]/layout_unit_len-1+y-1)])
+
     elif(orient=="R90"):
         rel_block_point=[]
-        for i in range(0,area[0]):
-            for j in range(0,area[1]):
-                rel_block_point.append([int((origin[0]-layout_unit_len)/layout_unit_len-j),int(origin[1]/layout_unit_len+i)])
+        for i in range(0,x):
+            for j in range(0,y):
+                rel_block_point.append([int((origin[0]-layout_unit_len)/layout_unit_len-j+1),int(origin[1]/layout_unit_len+i-1)])
+        rel_block_point.remove([int((origin[0]-layout_unit_len)/layout_unit_len+1),int(origin[1]/layout_unit_len-1)])
+        rel_block_point.remove([int((origin[0]-layout_unit_len)/layout_unit_len+1-x+1),int(origin[1]/layout_unit_len-1)])
+        rel_block_point.remove([int((origin[0]-layout_unit_len)/layout_unit_len+1),int(origin[1]/layout_unit_len-1+y-1)])
+        rel_block_point.remove([int((origin[0]-layout_unit_len)/layout_unit_len+1-x+1),int(origin[1]/layout_unit_len-1+y-1)])
+
+
     elif(orient=="R180"):
         rel_block_point=[]
-        for i in range(0,area[0]):
-            for j in range(0,area[1]):
-                rel_block_point.append([int((origin[0]-layout_unit_len)/layout_unit_len-i),int((origin[1]-layout_unit_len)/layout_unit_len-j)])
+        for i in range(0,x):
+            for j in range(0,y):
+                rel_block_point.append([int((origin[0]-layout_unit_len)/layout_unit_len-i+1),int((origin[1]-layout_unit_len)/layout_unit_len-j+1)])
+        rel_block_point.remove([int((origin[0]-layout_unit_len)/layout_unit_len+1),int((origin[1]-layout_unit_len)/layout_unit_len+1)])
+        rel_block_point.remove([int((origin[0]-layout_unit_len)/layout_unit_len+1-x+1),int((origin[1]-layout_unit_len)/layout_unit_len+1)])
+        rel_block_point.remove([int((origin[0]-layout_unit_len)/layout_unit_len+1),int((origin[1]-layout_unit_len)/layout_unit_len+1-y+1)])
+        rel_block_point.remove([int((origin[0]-layout_unit_len)/layout_unit_len+1-x+1),int((origin[1]-layout_unit_len)/layout_unit_len+1-y+1)])
+
     elif(orient=="R270"):
         rel_block_point=[]
-        for i in range(0,area[0]):
-            for j in range(0,area[1]):
-                rel_block_point.append([int(origin[0]/layout_unit_len+j),int((origin[1]-layout_unit_len)/layout_unit_len-i)])
+        for i in range(0,x):
+            for j in range(0,y):
+                rel_block_point.append([int(origin[0]/layout_unit_len+j-1),int((origin[1]-layout_unit_len)/layout_unit_len-i+1)])
+        rel_block_point.remove([int(origin[0]/layout_unit_len-1),int((origin[1]-layout_unit_len)/layout_unit_len+1)])
+        rel_block_point.remove([int(origin[0]/layout_unit_len-1+x-1),int((origin[1]-layout_unit_len)/layout_unit_len+1)])
+        rel_block_point.remove([int(origin[0]/layout_unit_len-1),int((origin[1]-layout_unit_len)/layout_unit_len+1-y+1)])
+        rel_block_point.remove([int(origin[0]/layout_unit_len-1+x-1),int((origin[1]-layout_unit_len)/layout_unit_len+1-y+1)])
+
+
     elif(orient=="MX"):
         rel_block_point=[]
-        for i in range(0,area[0]):
-            for j in range(0,area[1]):
-                rel_block_point.append([int(origin[0]/layout_unit_len+i),int((origin[1]-layout_unit_len)/layout_unit_len-j)])
+        for i in range(0,x):
+            for j in range(0,y):
+                rel_block_point.append([int(origin[0]/layout_unit_len+i-1),int((origin[1]-layout_unit_len)/layout_unit_len-j+1)])
+        rel_block_point.remove([int(origin[0]/layout_unit_len-1),int((origin[1]-layout_unit_len)/layout_unit_len+1)])
+        rel_block_point.remove([int(origin[0]/layout_unit_len-1+x-1),int((origin[1]-layout_unit_len)/layout_unit_len+1)])
+        rel_block_point.remove([int(origin[0]/layout_unit_len-1),int((origin[1]-layout_unit_len)/layout_unit_len+1-y+1)])
+        rel_block_point.remove([int(origin[0]/layout_unit_len-1+x-1),int((origin[1]-layout_unit_len)/layout_unit_len+1-y+1)])
+
+
     elif(orient=="MXR90"):
         rel_block_point=[]
-        for i in range(0,area[0]):
-            for j in range(0,area[1]):
-                rel_block_point.append([int(origin[0]/layout_unit_len+j),int(origin[1]/layout_unit_len+i)])
+        for i in range(0,x):
+            for j in range(0,y):
+                rel_block_point.append([int(origin[0]/layout_unit_len+j-1),int(origin[1]/layout_unit_len+i-1)])
+        rel_block_point.remove([int(origin[0]/layout_unit_len-1),int(origin[1]/layout_unit_len-1)])
+        rel_block_point.remove([int(origin[0]/layout_unit_len-1+x-1),int(origin[1]/layout_unit_len-1)])
+        rel_block_point.remove([int(origin[0]/layout_unit_len-1),int(origin[1]/layout_unit_len-1+y-1)])
+        rel_block_point.remove([int(origin[0]/layout_unit_len-1+x-1),int(origin[1]/layout_unit_len-1+y-1)])
+
+
     elif(orient=="MY"):
         rel_block_point=[]
-        for i in range(0,area[0]):
-            for j in range(0,area[1]):
-                rel_block_point.append([int((origin[0]-layout_unit_len)/layout_unit_len-i),int(origin[1]/layout_unit_len+j)])
+        for i in range(0,x):
+            for j in range(0,y):
+                rel_block_point.append([int((origin[0]-layout_unit_len)/layout_unit_len-i+1),int(origin[1]/layout_unit_len+j-1)])
+        rel_block_point.remove([int((origin[0]-layout_unit_len)/layout_unit_len+1),int(origin[1]/layout_unit_len-1)])
+        rel_block_point.remove([int((origin[0]-layout_unit_len)/layout_unit_len+1-x+1),int(origin[1]/layout_unit_len-1)])
+        rel_block_point.remove([int((origin[0]-layout_unit_len)/layout_unit_len+1),int(origin[1]/layout_unit_len-1+y-1)])
+        rel_block_point.remove([int((origin[0]-layout_unit_len)/layout_unit_len+1-x+1),int(origin[1]/layout_unit_len-1+y-1)])
+
+
     elif(orient=="MYR90"):
         rel_block_point=[]
-        for i in range(0,area[0]):
-            for j in range(0,area[1]):
-                rel_block_point.append([int((origin[0]-layout_unit_len)/layout_unit_len-j),int((origin[1]-layout_unit_len)/layout_unit_len-i)])
+        for i in range(0,x):
+            for j in range(0,y):
+                rel_block_point.append([int((origin[0]-layout_unit_len)/layout_unit_len-j+1),int((origin[1]-layout_unit_len)/layout_unit_len-i+1)])
+        rel_block_point.remove([int((origin[0]-layout_unit_len)/layout_unit_len+1),int((origin[1]-layout_unit_len)/layout_unit_len+1)])
+        rel_block_point.remove([int((origin[0]-layout_unit_len)/layout_unit_len+1-x+1),int((origin[1]-layout_unit_len)/layout_unit_len+1)])
+        rel_block_point.remove([int((origin[0]-layout_unit_len)/layout_unit_len+1),int((origin[1]-layout_unit_len)/layout_unit_len+1-y+1)])
+        rel_block_point.remove([int((origin[0]-layout_unit_len)/layout_unit_len+1-x+1),int((origin[1]-layout_unit_len)/layout_unit_len+1-y+1)])
+
+
     return rel_block_point
 
 
