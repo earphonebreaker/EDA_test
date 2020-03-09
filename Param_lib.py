@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 # coding: utf-8
 
 # In[1]:
@@ -14,9 +14,22 @@
 layout_unit_len=30
 
 
-# In[ ]:
+# In[1]:
 
 
 map_enlarge=4
 map_offset=2
+
+
+# In[2]:
+
+
+layer_straight_line=["jtl1j_a_1x1ai1ao3","ptl1j_a_1x1ai1ao3"]
+layer_corner_line=["jtl1j_a_1x1ai1ao4","ptl1j_a_1x1ai1ao4"]
+
+
+# In[ ]:
+
+
+
 

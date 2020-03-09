@@ -221,63 +221,63 @@ def last_check_index(index):#替换掉目标port的位置信息
 # In[12]:
 
 
-def direction_to_inst(input_direction,output_direction):#根据前后path的方向来确定输出到dbcreate中的模型，方向，相对原点等信息
+def direction_to_inst(input_direction,output_direction,layer):#根据前后path的方向来确定输出到dbcreate中的模型，方向，相对原点等信息
     if(input_direction==1):#注：这里jtl1j_a之类的，以后要换成ptl？
         if(output_direction==1):
-            model="jtl1j_a_1x1ai1ao3"
+            model=layer_straight_line[layer]
             orient="MY"
             origin=[-1,0]
         elif(output_direction==2):
-            model="jtl1j_a_1x1ai1ao4"
+            model=layer_corner_line[layer]
             orient="R180"
             origin=[-1,1]
         elif(output_direction==4):
-            model="jtl1j_a_1x1ai1ao4"
+            model=layer_corner_line[layer]
             orient="MY"
             origin=[1,0]
         else:
             raise Error("Wrong routing strategy: undefined direction -2")
     elif(input_direction==2):
         if(output_direction==1):
-            model="jtl1j_a_1x1ai1ao4"
+            model=layer_corner_line[layer]
             orient="MYR90"
             origin=[1,1]
         elif(output_direction==2):
-            model="jtl1j_a_1x1ai1ao3"
+            model=layer_straight_line[layer]
             orient="R270"
             origin=[0,1]
         elif(output_direction==3):
-            model="jtl1j_a_1x1ai1ao4"
+            model=layer_corner_line[layer]
             orient="R270"
             origin=[0,1]
         else:
             raise Error("Wrong routing strategy: undefined direction -2")
     elif(input_direction==3):
         if(output_direction==2):
-            model="jtl1j_a_1x1ai1ao4"
+            model=layer_corner_line[layer]
             orient="MX"
             origin=[0,1]
         elif(output_direction==3):
-            model="jtl1j_a_1x1ai1ao3"
+            model=layer_straight_line[layer]
             orient="R0"
             origin=[0,0]
         elif(output_direction==4):
-            model="jtl1j_a_1x1ai1ao4"
+            model=layer_corner_line[layer]
             orient="R0"
             origin=[0,0]
         else:
             raise Error("Wrong routing strategy: undefined direction -2")
     elif(input_direction==4):
         if(output_direction==1):
-            model="jtl1j_a_1x1ai1ao4"
+            model=layer_corner_line[layer]
             orient="R90"
             origin=[1,0]
         elif(output_direction==3):
-            model="jtl1j_a_1x1ai1ao4"
+            model=layer_corner_line[layer]
             orient="MXR90"
             origin=[0,0]
         elif(output_direction==4):
-            model="jtl1j_a_1x1ai1ao3"
+            model=layer_straight_line[layer]
             orient="R90"
             origin=[1,0]
         else:
@@ -287,15 +287,15 @@ def direction_to_inst(input_direction,output_direction):#根据前后path的方�
     return [model,orient,origin]
 
 
-# In[13]:
+# In[1]:
 
 
-def path_to_inst(path,coord_info,index,name):#根据path和两个版图之间的信息来建立il-dbcreate所需的字符串
+def path_to_inst(path,coord_info,index,name,layer):#根据path和两个版图之间的信息来建立il-dbcreate所需的字符串
     script=[]
     len_path=len(path)
     first_check=route_direction(path[0],path[1])
     check_list=[first_check]
-    inst_to_first=direction_to_inst(coord_info[0][1],first_check)
+    inst_to_first=direction_to_inst(coord_info[0][1],first_check,layer)
     xy_1=[(path[0][0]+inst_to_first[2][0])*layout_unit_len,(path[0][1]+inst_to_first[2][1])*layout_unit_len]
     first_one=to_dbCreate(inst_to_first[0],"{0}_{1}".format(name,index),xy_1,inst_to_first[1])#以上，先获取第一个line模块的信息
     script.append(first_one)
@@ -304,7 +304,7 @@ def path_to_inst(path,coord_info,index,name):#根据path和两个版图之间的
         check_index=route_direction(path[i],path[i+1])
         #print(check_index)
         check_list.append(check_index)
-        inst_to_line=direction_to_inst(check_list[i-1],check_index)
+        inst_to_line=direction_to_inst(check_list[i-1],check_index,layer)
         #print(inst_to_line)
         xy_seq=[(path[i][0]+inst_to_line[2][0])*layout_unit_len,(path[i][1]+inst_to_line[2][1])*layout_unit_len]
         #print(xy_seq)
@@ -312,7 +312,7 @@ def path_to_inst(path,coord_info,index,name):#根据path和两个版图之间的
         script.append(create_inst)#以上，获取中间模块的信息
     len_check=len(check_list)
     last_check=check_list[len_check-1]
-    inst_to_last=direction_to_inst(last_check,last_check_index(coord_info[1][1]))
+    inst_to_last=direction_to_inst(last_check,last_check_index(coord_info[1][1]),layer)
     xy_end=[(path[len_path-1][0]+inst_to_last[2][0])*layout_unit_len,(path[len_path-1][1]+inst_to_last[2][1])*layout_unit_len]
     last_one=to_dbCreate(inst_to_last[0],"{0}_{1}".format(name,index+len_path-1),xy_end,inst_to_last[1])#以上，获取最后一个模块的信息
     script.append(last_one)
