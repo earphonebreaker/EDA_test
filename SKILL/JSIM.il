@@ -1,4 +1,5 @@
 ;2020/3/5 杨树澄
+;2020/3/18 Update:添加了margin和simulate的单一单元的仿真选项，和psui菜单
 ;JSIM菜单
 ;--------------------------Margin_sweep-----------------------------------
 procedure( marginsw_form_jsim( wid_marginsw_jsim )
@@ -645,7 +646,7 @@ JSIM_psui=hiCreateMenuItem(
 hiCreatePulldownMenu(
 'Pulldown_JSIM
 "JSIMsim"
-list(  JSIM_slider_Margins JSIM_slider_Simulate JSIM_psui separator_JSIM JSIM_help )
+list(  JSIM_slider_Simulate JSIM_slider_Margins JSIM_psui separator_JSIM JSIM_help )
 )
 ;添加至layout窗口
 ;------------------------------------------------------------------------------
