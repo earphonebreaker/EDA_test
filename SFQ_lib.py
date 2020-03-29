@@ -1,7 +1,7 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 # coding: utf-8
 
-# In[3]:
+# In[4]:
 
 
 #class类型的单元库
@@ -762,6 +762,231 @@ def read_instance(info):
     else:
         raise Exception("No module matched")
     return model
+
+
+# In[10]:
+
+
+def interface(input_width,output_width,origin,rotate):#interface的python模型
+    enlarge_coef=3
+    if(rotate==1):
+        p1=[origin[0],origin[1]+input_width/2]
+        p2=[origin[0]-(output_width-input_width)/2,origin[1]+output_width/2]
+        p3=[p2[0]-enlarge_coef,p2[1]]
+        p4=[p3[0],origin[1]-output_width/2]
+        p5=[origin[0]-(output_width-input_width)/2,origin[1]-output_width/2]
+        p6=[origin[0],origin[1]-input_width/2]
+    elif(rotate==2):
+        p1=[origin[0]+input_width/2,origin[1]]
+        p2=[origin[0]+output_width/2,origin[1]-(output_width-input_width)/2]
+        p3=[p2[0],p2[1]-enlarge_coef]
+        p4=[origin[0]-output_width/2,p3[1]]
+        p5=[origin[0]-output_width/2,origin[1]-(output_width-input_width)/2]
+        p6=[origin[0]-input_width/2,origin[1]]
+    elif(rotate==3):
+        p1=[origin[0],origin[1]+input_width/2]
+        p2=[origin[0]+(output_width-input_width)/2,origin[1]+output_width/2]
+        p3=[p2[0]+enlarge_coef,p2[1]]
+        p4=[p3[0],origin[1]-output_width/2]
+        p5=[origin[0]+(output_width-input_width)/2,origin[1]-output_width/2]
+        p6=[origin[0],origin[1]-input_width/2]
+    elif(rotate==4):
+        p1=[origin[0]+input_width/2,origin[1]]
+        p2=[origin[0]+output_width/2,origin[1]+(output_width-input_width)/2]
+        p3=[p2[0],p2[1]+enlarge_coef]
+        p4=[origin[0]-output_width/2,p3[1]]
+        p5=[origin[0]-output_width/2,origin[1]+(output_width-input_width)/2]
+        p6=[origin[0]-input_width/2,origin[1]]
+    script='''ref=rodCreatePolygon(?cvId cellID ?layer "mn0" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
+rodCreatePolygon(?cvId cellID ?layer "in0" ?fromObj ref ?size -0.5)
+rodCreatePolygon(?cvId cellID ?layer "mp1" ?fromObj ref ?size 0.5)
+'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1])
+    return script
+#test=interface(4,18,[60,-34],4)
+#print(test)
+
+
+# In[48]:
+
+
+def corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend):#corner的python模型，descend为 13输入则向下，24输入则向左
+    tan675=2.414213562
+    x=15-wire_width/(2*tan675)
+    if(in_index==1):
+        if(out_index==2):
+            p1=[origin[0],origin[1]+wire_width/2]
+            p2=[origin[0]-wire_width/tan675,origin[1]+wire_width/2]
+            p3=[origin[0]-((corner_width-1)*30+15)-wire_width/2,origin[1]-((corner_width-1)*30+15)+wire_width/tan675]
+            p4=[origin[0]-((corner_width-1)*30+15)-wire_width/2,origin[1]-((corner_width-1)*30+15)]
+            p5=[origin[0]-((corner_width-1)*30+15)+wire_width/2,origin[1]-((corner_width-1)*30+15)]
+            p6=[origin[0],origin[1]-wire_width/2]
+            script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
+'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type)
+        elif(out_index==1):
+            if(descend==1):
+                p1=[origin[0],origin[1]+wire_width/2]
+                p2=[origin[0]-wire_width/tan675-x,origin[1]+wire_width/2]
+                p3=[origin[0]-corner_width*30+x,origin[1]-(corner_width-1)*30+wire_width/2]
+                p4=[origin[0]-corner_width*30,origin[1]-(corner_width-1)*30+wire_width/2]                
+                p5=[origin[0]-corner_width*30,origin[1]-(corner_width-1)*30-wire_width/2]
+                p6=[origin[0]-corner_width*30+x+wire_width/tan675,origin[1]-(corner_width-1)*30-wire_width/2]
+                p7=[origin[0]-x,origin[1]-wire_width/2]
+                p8=[origin[0],origin[1]-wire_width/2]
+                script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
+'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type,p7[0],p7[1],p8[0],p8[1])
+            elif(descend==0):
+                p1=[origin[0],origin[1]-wire_width/2]
+                p2=[origin[0]-wire_width/tan675-x,origin[1]-wire_width/2]
+                p3=[origin[0]-corner_width*30+x,origin[1]+(corner_width-1)*30-wire_width/2]
+                p4=[origin[0]-corner_width*30,origin[1]+(corner_width-1)*30-wire_width/2]                
+                p5=[origin[0]-corner_width*30,origin[1]+(corner_width-1)*30+wire_width/2]
+                p6=[origin[0]-corner_width*30+x+wire_width/tan675,origin[1]+(corner_width-1)*30+wire_width/2]
+                p7=[origin[0]-x,origin[1]+wire_width/2]
+                p8=[origin[0],origin[1]+wire_width/2]
+                script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
+'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type,p7[0],p7[1],p8[0],p8[1])
+        elif(out_index==4):
+            p1=[origin[0],origin[1]-wire_width/2]
+            p2=[origin[0]-wire_width/tan675,origin[1]-wire_width/2]
+            p3=[origin[0]-((corner_width-1)*30+15)-wire_width/2,origin[1]+((corner_width-1)*30+15)-wire_width/tan675]
+            p4=[origin[0]-((corner_width-1)*30+15)-wire_width/2,origin[1]+((corner_width-1)*30+15)]
+            p5=[origin[0]-((corner_width-1)*30+15)+wire_width/2,origin[1]+((corner_width-1)*30+15)]
+            p6=[origin[0],origin[1]+wire_width/2]
+            script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
+'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type)
+            
+    elif(in_index==2):
+        if(out_index==1):
+            p1=[origin[0]+wire_width/2,origin[1]]
+            p2=[origin[0]+wire_width/2,origin[1]-wire_width/tan675]
+            p3=[origin[0]-((corner_width-1)*30+15)+wire_width/tan675,origin[1]-((corner_width-1)*30+15)-wire_width/2]
+            p4=[origin[0]-((corner_width-1)*30+15),origin[1]-((corner_width-1)*30+15)-wire_width/2]
+            p5=[origin[0]-((corner_width-1)*30+15),origin[1]-((corner_width-1)*30+15)+wire_width/2]
+            p6=[origin[0]-wire_width/2,origin[1]]
+            script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
+'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type)
+        elif(out_index==2):
+            if(descend==1):
+                p1=[origin[0]+wire_width/2,origin[1]]
+                p2=[origin[0]+wire_width/2,origin[1]-wire_width/tan675-x]
+                p3=[origin[0]-(corner_width-1)*30+wire_width/2,origin[1]-corner_width*30+x]
+                p4=[origin[0]-(corner_width-1)*30+wire_width/2,origin[1]-corner_width*30]                
+                p5=[origin[0]-(corner_width-1)*30-wire_width/2,origin[1]-corner_width*30]
+                p6=[origin[0]-(corner_width-1)*30-wire_width/2,origin[1]-corner_width*30+x+wire_width/tan675]
+                p7=[origin[0]-wire_width/2,origin[1]-x]
+                p8=[origin[0]-wire_width/2,origin[1]]
+                script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
+'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type,p7[0],p7[1],p8[0],p8[1])
+            elif(descend==0):
+                p1=[origin[0]-wire_width/2,origin[1]]
+                p2=[origin[0]-wire_width/2,origin[1]-wire_width/tan675-x]
+                p3=[origin[0]+(corner_width-1)*30-wire_width/2,origin[1]-corner_width*30+x]
+                p4=[origin[0]+(corner_width-1)*30-wire_width/2,origin[1]-corner_width*30]                
+                p5=[origin[0]+(corner_width-1)*30+wire_width/2,origin[1]-corner_width*30]
+                p6=[origin[0]+(corner_width-1)*30+wire_width/2,origin[1]-corner_width*30+x+wire_width/tan675]
+                p7=[origin[0]+wire_width/2,origin[1]-x]
+                p8=[origin[0]+wire_width/2,origin[1]]
+                script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
+'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type,p7[0],p7[1],p8[0],p8[1])
+        elif(out_index==3):
+            p1=[origin[0]-wire_width/2,origin[1]]
+            p2=[origin[0]-wire_width/2,origin[1]-wire_width/tan675]
+            p3=[origin[0]+((corner_width-1)*30+15)-wire_width/tan675,origin[1]-((corner_width-1)*30+15)-wire_width/2]
+            p4=[origin[0]+((corner_width-1)*30+15),origin[1]-((corner_width-1)*30+15)-wire_width/2]
+            p5=[origin[0]+((corner_width-1)*30+15),origin[1]-((corner_width-1)*30+15)+wire_width/2]
+            p6=[origin[0]+wire_width/2,origin[1]]
+            script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
+'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type)
+            
+    elif(in_index==3):
+        if(out_index==2):
+            p1=[origin[0],origin[1]+wire_width/2]
+            p2=[origin[0]+wire_width/tan675,origin[1]+wire_width/2]
+            p3=[origin[0]+(corner_width-1)*30+15+wire_width/2,origin[1]-((corner_width-1)*30+15)+wire_width/tan675]
+            p4=[origin[0]+(corner_width-1)*30+15+wire_width/2,origin[1]-((corner_width-1)*30+15)]
+            p5=[origin[0]+(corner_width-1)*30+15-wire_width/2,origin[1]-((corner_width-1)*30+15)]
+            p6=[origin[0],origin[1]-wire_width/2]
+            script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
+'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type)
+        elif(out_index==3):
+            if(descend==1):
+                p1=[origin[0],origin[1]+wire_width/2]
+                p2=[origin[0]+wire_width/tan675+x,origin[1]+wire_width/2]
+                p3=[origin[0]+corner_width*30-x,origin[1]-(corner_width-1)*30+wire_width/2]
+                p4=[origin[0]+corner_width*30,origin[1]-(corner_width-1)*30+wire_width/2]                
+                p5=[origin[0]+corner_width*30,origin[1]-(corner_width-1)*30-wire_width/2]
+                p6=[origin[0]+corner_width*30-x-wire_width/tan675,origin[1]-(corner_width-1)*30-wire_width/2]
+                p7=[origin[0]+x,origin[1]-wire_width/2]
+                p8=[origin[0],origin[1]-wire_width/2]
+                script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
+'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type,p7[0],p7[1],p8[0],p8[1])
+            elif(descend==0):
+                p1=[origin[0],origin[1]-wire_width/2]
+                p2=[origin[0]+wire_width/tan675+x,origin[1]-wire_width/2]
+                p3=[origin[0]+corner_width*30-x,origin[1]+(corner_width-1)*30-wire_width/2]
+                p4=[origin[0]+corner_width*30,origin[1]+(corner_width-1)*30-wire_width/2]                
+                p5=[origin[0]+corner_width*30,origin[1]+(corner_width-1)*30+wire_width/2]
+                p6=[origin[0]+corner_width*30-x-wire_width/tan675,origin[1]+(corner_width-1)*30+wire_width/2]
+                p7=[origin[0]+x,origin[1]+wire_width/2]
+                p8=[origin[0],origin[1]+wire_width/2]
+                script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
+'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type,p7[0],p7[1],p8[0],p8[1])
+        elif(out_index==4):
+            p1=[origin[0],origin[1]-wire_width/2]
+            p2=[origin[0]+wire_width/tan675,origin[1]-wire_width/2]
+            p3=[origin[0]+((corner_width-1)*30+15)+wire_width/2,origin[1]+((corner_width-1)*30+15)-wire_width/tan675]
+            p4=[origin[0]+((corner_width-1)*30+15)+wire_width/2,origin[1]+((corner_width-1)*30+15)]
+            p5=[origin[0]+((corner_width-1)*30+15)-wire_width/2,origin[1]+((corner_width-1)*30+15)]
+            p6=[origin[0],origin[1]+wire_width/2]
+            script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
+'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type)
+
+    elif(in_index==4):
+        if(out_index==1):
+            p1=[origin[0]+wire_width/2,origin[1]]
+            p2=[origin[0]+wire_width/2,origin[1]+wire_width/tan675]
+            p3=[origin[0]-((corner_width-1)*30+15)+wire_width/tan675,origin[1]+((corner_width-1)*30+15)+wire_width/2]
+            p4=[origin[0]-((corner_width-1)*30+15),origin[1]+((corner_width-1)*30+15)+wire_width/2]
+            p5=[origin[0]-((corner_width-1)*30+15),origin[1]+((corner_width-1)*30+15)-wire_width/2]
+            p6=[origin[0]-wire_width/2,origin[1]]
+            script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
+'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type)
+        elif(out_index==4):
+            if(descend==1):
+                p1=[origin[0]+wire_width/2,origin[1]]
+                p2=[origin[0]+wire_width/2,origin[1]+wire_width/tan675+x]
+                p3=[origin[0]-(corner_width-1)*30+wire_width/2,origin[1]+corner_width*30-x]
+                p4=[origin[0]-(corner_width-1)*30+wire_width/2,origin[1]+corner_width*30]                
+                p5=[origin[0]-(corner_width-1)*30-wire_width/2,origin[1]+corner_width*30]
+                p6=[origin[0]-(corner_width-1)*30-wire_width/2,origin[1]+corner_width*30-x-wire_width/tan675]
+                p7=[origin[0]-wire_width/2,origin[1]+x]
+                p8=[origin[0]-wire_width/2,origin[1]]
+                script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
+'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type,p7[0],p7[1],p8[0],p8[1])
+            elif(descend==0):
+                p1=[origin[0]-wire_width/2,origin[1]]
+                p2=[origin[0]-wire_width/2,origin[1]+wire_width/tan675+x]
+                p3=[origin[0]+(corner_width-1)*30-wire_width/2,origin[1]+corner_width*30-x]
+                p4=[origin[0]+(corner_width-1)*30-wire_width/2,origin[1]+corner_width*30]                
+                p5=[origin[0]+(corner_width-1)*30+wire_width/2,origin[1]+corner_width*30]
+                p6=[origin[0]+(corner_width-1)*30+wire_width/2,origin[1]+corner_width*30-x-wire_width/tan675]
+                p7=[origin[0]+wire_width/2,origin[1]+x]
+                p8=[origin[0]+wire_width/2,origin[1]]
+                script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
+'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type,p7[0],p7[1],p8[0],p8[1])
+        elif(out_index==3):
+            p1=[origin[0]-wire_width/2,origin[1]]
+            p2=[origin[0]-wire_width/2,origin[1]+wire_width/tan675]
+            p3=[origin[0]+((corner_width-1)*30+15)-wire_width/tan675,origin[1]+((corner_width-1)*30+15)+wire_width/2]
+            p4=[origin[0]+((corner_width-1)*30+15),origin[1]+((corner_width-1)*30+15)+wire_width/2]
+            p5=[origin[0]+((corner_width-1)*30+15),origin[1]+((corner_width-1)*30+15)-wire_width/2]
+            p6=[origin[0]+wire_width/2,origin[1]]
+            script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
+'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type)
+            
+    return script
+test=corner(22,3,"mn0",[15,-90],4,3,0)
+print(test)
 
 
 # In[22]:
