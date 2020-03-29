@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[4]:
+# In[2]:
 
 
 #class类型的单元库
@@ -765,7 +765,7 @@ def read_instance(info):
     return model
 
 
-# In[10]:
+# In[1]:
 
 
 def interface(input_width,output_width,origin,rotate):#interface的python模型
@@ -807,7 +807,7 @@ rodCreatePolygon(?cvId cellID ?layer "mp1" ?fromObj ref ?size 0.5)
 #print(test)
 
 
-# In[48]:
+# In[3]:
 
 
 def corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend):#corner的python模型，descend为 13输入则向下，24输入则向左
@@ -821,7 +821,7 @@ def corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend):
             p4=[origin[0]-((corner_width-1)*layout_unit_len+layout_unit_len/2)-wire_width/2,origin[1]-((corner_width-1)*layout_unit_len+layout_unit_len/2)]
             p5=[origin[0]-((corner_width-1)*layout_unit_len+layout_unit_len/2)+wire_width/2,origin[1]-((corner_width-1)*layout_unit_len+layout_unit_len/2)]
             p6=[origin[0],origin[1]-wire_width/2]
-            script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
+            script='''rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
 '''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type)
         elif(out_index==1):
             if(descend==1):
@@ -833,7 +833,7 @@ def corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend):
                 p6=[origin[0]-corner_width*layout_unit_len+x+wire_width/tan675,origin[1]-(corner_width-1)*layout_unit_len-wire_width/2]
                 p7=[origin[0]-x,origin[1]-wire_width/2]
                 p8=[origin[0],origin[1]-wire_width/2]
-                script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
+                script='''rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
 '''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type,p7[0],p7[1],p8[0],p8[1])
             elif(descend==0):
                 p1=[origin[0],origin[1]-wire_width/2]
@@ -844,7 +844,7 @@ def corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend):
                 p6=[origin[0]-corner_width*layout_unit_len+x+wire_width/tan675,origin[1]+(corner_width-1)*layout_unit_len+wire_width/2]
                 p7=[origin[0]-x,origin[1]+wire_width/2]
                 p8=[origin[0],origin[1]+wire_width/2]
-                script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
+                script='''rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
 '''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type,p7[0],p7[1],p8[0],p8[1])
         elif(out_index==4):
             p1=[origin[0],origin[1]-wire_width/2]
@@ -853,7 +853,7 @@ def corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend):
             p4=[origin[0]-((corner_width-1)*layout_unit_len+layout_unit_len/2)-wire_width/2,origin[1]+((corner_width-1)*layout_unit_len+layout_unit_len/2)]
             p5=[origin[0]-((corner_width-1)*layout_unit_len+layout_unit_len/2)+wire_width/2,origin[1]+((corner_width-1)*layout_unit_len+layout_unit_len/2)]
             p6=[origin[0],origin[1]+wire_width/2]
-            script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
+            script='''rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
 '''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type)
             
     elif(in_index==2):
@@ -864,7 +864,7 @@ def corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend):
             p4=[origin[0]-((corner_width-1)*layout_unit_len+layout_unit_len/2),origin[1]-((corner_width-1)*layout_unit_len+layout_unit_len/2)-wire_width/2]
             p5=[origin[0]-((corner_width-1)*layout_unit_len+layout_unit_len/2),origin[1]-((corner_width-1)*layout_unit_len+layout_unit_len/2)+wire_width/2]
             p6=[origin[0]-wire_width/2,origin[1]]
-            script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
+            script='''rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
 '''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type)
         elif(out_index==2):
             if(descend==1):
@@ -876,7 +876,7 @@ def corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend):
                 p6=[origin[0]-(corner_width-1)*layout_unit_len-wire_width/2,origin[1]-corner_width*layout_unit_len+x+wire_width/tan675]
                 p7=[origin[0]-wire_width/2,origin[1]-x]
                 p8=[origin[0]-wire_width/2,origin[1]]
-                script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
+                script='''rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
 '''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type,p7[0],p7[1],p8[0],p8[1])
             elif(descend==0):
                 p1=[origin[0]-wire_width/2,origin[1]]
@@ -887,7 +887,7 @@ def corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend):
                 p6=[origin[0]+(corner_width-1)*layout_unit_len+wire_width/2,origin[1]-corner_width*layout_unit_len+x+wire_width/tan675]
                 p7=[origin[0]+wire_width/2,origin[1]-x]
                 p8=[origin[0]+wire_width/2,origin[1]]
-                script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
+                script='''rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
 '''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type,p7[0],p7[1],p8[0],p8[1])
         elif(out_index==3):
             p1=[origin[0]-wire_width/2,origin[1]]
@@ -896,7 +896,7 @@ def corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend):
             p4=[origin[0]+((corner_width-1)*layout_unit_len+layout_unit_len/2),origin[1]-((corner_width-1)*layout_unit_len+layout_unit_len/2)-wire_width/2]
             p5=[origin[0]+((corner_width-1)*layout_unit_len+layout_unit_len/2),origin[1]-((corner_width-1)*layout_unit_len+layout_unit_len/2)+wire_width/2]
             p6=[origin[0]+wire_width/2,origin[1]]
-            script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
+            script='''rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
 '''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type)
             
     elif(in_index==3):
@@ -907,7 +907,7 @@ def corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend):
             p4=[origin[0]+(corner_width-1)*layout_unit_len+layout_unit_len/2+wire_width/2,origin[1]-((corner_width-1)*layout_unit_len+layout_unit_len/2)]
             p5=[origin[0]+(corner_width-1)*layout_unit_len+layout_unit_len/2-wire_width/2,origin[1]-((corner_width-1)*layout_unit_len+layout_unit_len/2)]
             p6=[origin[0],origin[1]-wire_width/2]
-            script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
+            script='''rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
 '''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type)
         elif(out_index==3):
             if(descend==1):
@@ -919,7 +919,7 @@ def corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend):
                 p6=[origin[0]+corner_width*layout_unit_len-x-wire_width/tan675,origin[1]-(corner_width-1)*layout_unit_len-wire_width/2]
                 p7=[origin[0]+x,origin[1]-wire_width/2]
                 p8=[origin[0],origin[1]-wire_width/2]
-                script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
+                script='''rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
 '''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type,p7[0],p7[1],p8[0],p8[1])
             elif(descend==0):
                 p1=[origin[0],origin[1]-wire_width/2]
@@ -930,7 +930,7 @@ def corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend):
                 p6=[origin[0]+corner_width*layout_unit_len-x-wire_width/tan675,origin[1]+(corner_width-1)*layout_unit_len+wire_width/2]
                 p7=[origin[0]+x,origin[1]+wire_width/2]
                 p8=[origin[0],origin[1]+wire_width/2]
-                script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
+                script='''rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
 '''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type,p7[0],p7[1],p8[0],p8[1])
         elif(out_index==4):
             p1=[origin[0],origin[1]-wire_width/2]
@@ -939,7 +939,7 @@ def corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend):
             p4=[origin[0]+((corner_width-1)*layout_unit_len+layout_unit_len/2)+wire_width/2,origin[1]+((corner_width-1)*layout_unit_len+layout_unit_len/2)]
             p5=[origin[0]+((corner_width-1)*layout_unit_len+layout_unit_len/2)-wire_width/2,origin[1]+((corner_width-1)*layout_unit_len+layout_unit_len/2)]
             p6=[origin[0],origin[1]+wire_width/2]
-            script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
+            script='''rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
 '''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type)
 
     elif(in_index==4):
@@ -950,7 +950,7 @@ def corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend):
             p4=[origin[0]-((corner_width-1)*layout_unit_len+layout_unit_len/2),origin[1]+((corner_width-1)*layout_unit_len+layout_unit_len/2)+wire_width/2]
             p5=[origin[0]-((corner_width-1)*layout_unit_len+layout_unit_len/2),origin[1]+((corner_width-1)*layout_unit_len+layout_unit_len/2)-wire_width/2]
             p6=[origin[0]-wire_width/2,origin[1]]
-            script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
+            script='''rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
 '''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type)
         elif(out_index==4):
             if(descend==1):
@@ -962,7 +962,7 @@ def corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend):
                 p6=[origin[0]-(corner_width-1)*layout_unit_len-wire_width/2,origin[1]+corner_width*layout_unit_len-x-wire_width/tan675]
                 p7=[origin[0]-wire_width/2,origin[1]+x]
                 p8=[origin[0]-wire_width/2,origin[1]]
-                script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
+                script='''rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
 '''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type,p7[0],p7[1],p8[0],p8[1])
             elif(descend==0):
                 p1=[origin[0]-wire_width/2,origin[1]]
@@ -973,7 +973,7 @@ def corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend):
                 p6=[origin[0]+(corner_width-1)*layout_unit_len+wire_width/2,origin[1]+corner_width*layout_unit_len-x-wire_width/tan675]
                 p7=[origin[0]+wire_width/2,origin[1]+x]
                 p8=[origin[0]+wire_width/2,origin[1]]
-                script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
+                script='''rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11} {13}:{14} {15}:{16}))
 '''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type,p7[0],p7[1],p8[0],p8[1])
         elif(out_index==3):
             p1=[origin[0]-wire_width/2,origin[1]]
@@ -982,11 +982,38 @@ def corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend):
             p4=[origin[0]+((corner_width-1)*layout_unit_len+layout_unit_len/2),origin[1]+((corner_width-1)*layout_unit_len+layout_unit_len/2)+wire_width/2]
             p5=[origin[0]+((corner_width-1)*layout_unit_len+layout_unit_len/2),origin[1]+((corner_width-1)*layout_unit_len+layout_unit_len/2)-wire_width/2]
             p6=[origin[0]+wire_width/2,origin[1]]
-            script='''ref=rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
+            script='''rodCreatePolygon(?cvId cellID ?layer "{12}" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7} {8}:{9} {10}:{11}))
 '''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1],p5[0],p5[1],p6[0],p6[1],wire_type)
             
     return script
 #test=corner(22,3,"mn0",[layout_unit_len/2,-90],4,3,0)
+#print(test)
+
+
+# In[8]:
+
+
+def path(source,dest,width,wire_type):#普通线的模型
+    script='''rodCreatePath(?layer "{0}" ?pts list({2}:{3} {4}:{5}) ?width {1} ?justification "center" ?cvId  cellID)'''.format(wire_type,width,source[0],source[1],dest[0],dest[1])
+    return script
+#test=path([90,90],[180,30],22,"mn0")
+#print(test)
+
+
+# In[10]:
+
+
+def cross(width,origin):#cross的模型
+    center=[origin[0]+layout_unit_len/2,origin[1]+layout_unit_len/2]
+    p1=[center[0]-width/2,center[1]-width/2]
+    p2=[center[0]-width/2,center[1]+width/2]
+    p3=[center[0]+width/2,center[1]+width/2]
+    p4=[center[0]+width/2,center[1]-width/2]
+    script='''ref=rodCreatePolygon(?cvId cellID ?layer "mn0" ?pts list({0}:{1} {2}:{3} {4}:{5} {6}:{7}))
+rodCreatePolygon(?cvId cellID ?layer "in0" ?fromObj ref ?size -1)
+rodCreatePolygon(?cvId cellID ?layer "mp1" ?fromObj ref ?size 1)'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1])
+    return script
+#test=cross(22,[10,10])
 #print(test)
 
 
