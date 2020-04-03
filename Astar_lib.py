@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # coding: utf-8
 
 # In[1]:
@@ -140,6 +140,17 @@ class Map():
             x=block_list[i][0]
             y=block_list[i][1]
             self.map[y][x] = 0;
+    def get_blocked_point(self,block_list):
+        block_list_len=len(block_list)
+        prev_block=[]
+        for i in range(0,block_list_len):
+            x=block_list[i][0]
+            y=block_list[i][1]
+
+            print(x,y)
+            if(self.map[y][x]==1):
+                prev_block.append([x,y])
+        return prev_block
         
     def showMap(self):
         print("+" * (3 * self.width + 2))

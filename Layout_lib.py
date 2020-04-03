@@ -414,7 +414,7 @@ def origin_to_blockpoint(area,origin,orient):#根据每个SFQmodel的面积，�
     return rel_block_point
 
 
-# In[15]:
+# In[17]:
 
 
 def get_abs_block_point(layout_origin,block_point):#把block点的相对坐标转化到map中的绝对位置
@@ -428,7 +428,7 @@ def get_abs_block_point(layout_origin,block_point):#把block点的相对坐标�
     return abs_point
 
 
-# In[1]:
+# In[18]:
 
 
 def origin_to_blockpoint_prev(area,origin,orient):#原版的block函数
@@ -436,46 +436,46 @@ def origin_to_blockpoint_prev(area,origin,orient):#原版的block函数
         rel_block_point=[]
         for i in range(0,area[0]):
             for j in range(0,area[1]):
-                rel_block_point.append([int(origin[0]/layout_len_unit+i),int(origin[1]/layout_len_unit+j)])
+                rel_block_point.append([int(origin[0]/layout_unit_len+i),int(origin[1]/layout_unit_len+j)])
     elif(orient=="R90"):
         rel_block_point=[]
         for i in range(0,area[0]):
             for j in range(0,area[1]):
-                rel_block_point.append([int((origin[0]-layout_len_unit)/layout_len_unit-j),int(origin[1]/layout_len_unit+i)])
+                rel_block_point.append([int((origin[0]-layout_unit_len)/layout_unit_len-j),int(origin[1]/layout_unit_len+i)])
     elif(orient=="R180"):
         rel_block_point=[]
         for i in range(0,area[0]):
             for j in range(0,area[1]):
-                rel_block_point.append([int((origin[0]-layout_len_unit)/layout_len_unit-i),int((origin[1]-layout_len_unit)/layout_len_unit-j)])
+                rel_block_point.append([int((origin[0]-layout_unit_len)/layout_unit_len-i),int((origin[1]-layout_unit_len)/layout_unit_len-j)])
     elif(orient=="R270"):
         rel_block_point=[]
         for i in range(0,area[0]):
             for j in range(0,area[1]):
-                rel_block_point.append([int(origin[0]/layout_len_unit+j),int((origin[1]-layout_len_unit)/layout_len_unit-i)])
+                rel_block_point.append([int(origin[0]/layout_unit_len+j),int((origin[1]-layout_unit_len)/layout_unit_len-i)])
     elif(orient=="MX"):
         rel_block_point=[]
         for i in range(0,area[0]):
             for j in range(0,area[1]):
-                rel_block_point.append([int(origin[0]/layout_len_unit+i),int((origin[1]-layout_len_unit)/layout_len_unit-j)])
+                rel_block_point.append([int(origin[0]/layout_unit_len+i),int((origin[1]-layout_unit_len)/layout_unit_len-j)])
     elif(orient=="MXR90"):
         rel_block_point=[]
         for i in range(0,area[0]):
             for j in range(0,area[1]):
-                rel_block_point.append([int(origin[0]/layout_len_unit+j),int(origin[1]/layout_len_unit+i)])
+                rel_block_point.append([int(origin[0]/layout_unit_len+j),int(origin[1]/layout_unit_len+i)])
     elif(orient=="MY"):
         rel_block_point=[]
         for i in range(0,area[0]):
             for j in range(0,area[1]):
-                rel_block_point.append([int((origin[0]-layout_len_unit)/layout_len_unit-i),int(origin[1]/layout_len_unit+j)])
+                rel_block_point.append([int((origin[0]-layout_unit_len)/layout_unit_len-i),int(origin[1]/layout_unit_len+j)])
     elif(orient=="MYR90"):
         rel_block_point=[]
         for i in range(0,area[0]):
             for j in range(0,area[1]):
-                rel_block_point.append([int((origin[0]-layout_len_unit)/layout_len_unit-j),int((origin[1]-layout_len_unit)/layout_len_unit-i)])
+                rel_block_point.append([int((origin[0]-layout_unit_len)/layout_unit_len-j),int((origin[1]-layout_unit_len)/layout_unit_len-i)])
     return rel_block_point
 
 
-# In[1]:
+# In[19]:
 
 
 def get_abs_coord(orient,origin,relative_coord,index):#根据端口的相对坐标、版图原点和方向来确定端口在整个空间的绝对坐标
@@ -550,7 +550,7 @@ def get_abs_coord(orient,origin,relative_coord,index):#根据端口的相对坐�
 #    print(test)
 
 
-# In[2]:
+# In[20]:
 
 
 def port_coord_to_map(coord,index):#绘制地图时端口坐标转回左下点
@@ -565,7 +565,7 @@ def port_coord_to_map(coord,index):#绘制地图时端口坐标转回左下点
     return new_coord
 
 
-# In[3]:
+# In[21]:
 
 
 def port_location(number,area):#根据端口位置序号和面积类型来判断端口与原点的相对位置
@@ -595,7 +595,7 @@ def port_location(number,area):#根据端口位置序号和面积类型来判断
 #    print(test)
 
 
-# In[ ]:
+# In[22]:
 
 
 def layout_to_model(module_name,inst_name):#读取layout读出的module名和对应的inst名，获得一个来自SFQlib的model
@@ -620,4 +620,396 @@ def layout_to_model(module_name,inst_name):#读取layout读出的module名和对
     return layout_model
     
 #k=info_to_model(t[0][0],t[4][0])
+
+
+# In[23]:
+
+
+def get_index_sequence(path,first_index,last_index):
+    len_path=len(path)
+    sequence=[first_index]
+    for i in range(0,len_path-1):
+        index=route_direction(path[i],path[i+1])
+        sequence.append(index)
+    sequence.append(last_index)
+    return sequence
+
+path=[[9, 1], [8, 1], [7, 1], [6, 1], [5, 1], [4, 1], [3, 1], [2, 1], [2, 2], [2, 3], [2, 4], [2, 5], [2, 6], [2, 7], [2, 8], [2, 9]]
+test=get_index_sequence(path,1,4)
+print(test)
+
+
+# In[24]:
+
+
+def get_route_type(index_sequence):
+    len_index=len(index_sequence)
+    rtype=[]
+    for i in range(0,len_index-1):
+        if(not index_sequence[i]== index_sequence[i+1]):
+            rtype.append("c")#corner
+        else:
+            rtype.append("p")#path
+    return rtype
+
+index_sequence=[1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+test=get_route_type(index_sequence)
+print(test)
+
+
+# In[25]:
+
+
+enlarge_coef=3
+def process_path_coord(coord_source,coord_dest,in_index,out_index,drv_out,wire_width,end_extend_type):
+    itface_width=(wire_width-drv_out)/2+enlarge_coef
+    path_extend=layout_unit_len-itface_width
+    cross_extend=(layout_unit_len-(wire_width+2))/2
+    if(in_index==1):
+        source=[coord_source[0]+path_extend,coord_source[1]]
+    elif(in_index==2):
+        source=[coord_source[0],coord_source[1]+path_extend]
+    elif(in_index==3):
+        source=[coord_source[0]-path_extend,coord_source[1]]
+    elif(in_index==4):
+        source=[coord_source[0],coord_source[1]-path_extend]
+    if(end_extend_type=="itface"):
+        if(out_index==1):
+            dest=[coord_dest[0]-path_extend,coord_dest[1]]
+        elif(out_index==2):
+            dest=[coord_dest[0],coord_dest[1]-path_extend]
+        elif(out_index==3):
+            dest=[coord_dest[0]+path_extend,coord_dest[1]]
+        elif(out_index==4):
+            dest=[coord_dest[0],coord_dest[1]+path_extend]
+    elif(end_extend_type=="cross"):
+        if(out_index==1):
+            dest=[coord_dest[0]-cross_extend,coord_dest[1]]
+        elif(out_index==2):
+            dest=[coord_dest[0],coord_dest[1]-cross_extend]
+        elif(out_index==3):
+            dest=[coord_dest[0]+cross_extend,coord_dest[1]]
+        elif(out_index==4):
+            dest=[coord_dest[0],coord_dest[1]+cross_extend]
+    else:
+        dest=coord_dest
+    return [source,dest]
+
+
+# In[26]:
+
+
+def pcell_coord(coord,in_index):
+    if(in_index==1):
+        origin=[coord[0]+layout_unit_len,coord[1]+layout_unit_len/2]
+    elif(in_index==2):
+        origin=[coord[0]+layout_unit_len/2,coord[1]+layout_unit_len]
+    elif(in_index==3):
+        origin=[coord[0],coord[1]+layout_unit_len/2]
+    elif(in_index==4):
+        origin=[coord[0]+layout_unit_len/2,coord[1]]    
+    return origin
+        
+    
+
+
+# In[27]:
+
+
+def index_to_layer(num):
+    if(num==2 or num==1):
+        return "mp1"
+    else:
+        return "mn0"
+
+
+# In[28]:
+
+
+def get_descend(index,source,dest):
+    if(index==1 or index==3):
+        if(source[1]-dest[1]>0):
+            descend=1
+        else:
+            descend=0
+    elif(index==2 or index==4):
+        if(source[0]-dest[0]>0):
+            descend=1
+        else:
+            descend=0
+    return descend
+
+
+# In[31]:
+
+
+def extend_port_path(source,dest,index):
+    rsource=source
+    if(index==1):
+        rdest=[dest[0]-layout_unit_len,dest[1]]
+    elif(index==2):
+        rdest=[dest[0],dest[1]-layout_unit_len]
+    elif(index==3):
+        rdest=[dest[0]+layout_unit_len,dest[1]]
+    elif(index==4):
+        rdest=[dest[0],dest[1]+layout_unit_len]
+    return [rsource,rdest]
+
+def shorten_path(last_pts,last_index):
+    if(last_index==1):
+        pts=[last_pts[0]-layout_unit_len,last_pts[1]]
+    elif(last_index==2):
+        pts=[last_pts[0],last_pts[1]-layout_unit_len]
+    elif(last_index==3):
+        pts=[last_pts[0]+layout_unit_len,last_pts[1]]
+    elif(last_index==4):
+        pts=[last_pts[0],last_pts[1]+layout_unit_len]
+    return pts          
+
+
+# In[1]:
+
+
+def analyze_path(path_coord,path_type,index_seq,rtype_seq):
+    info=[]
+    #drv_itface
+    group_A=[1,2]
+    group_B=[3,4]
+    if(path_type[1] in group_B):
+        info.append([path_coord[0],index_seq[0],"mn0"])
+    elif(path_type[1] in group_A):
+        info.append([path_coord[0],index_seq[0],"mp1"])
+    
+    #path corner cross
+    len_path=len(path_coord)
+    k=1
+    rtype_seq_temp=[]
+    for r in rtype_seq:
+        rtype_seq_temp.append(r)
+    for i in range(1,len_path-1):
+        if(i!=len_path-2 and i!=2):
+            double_corner=rtype_seq_temp[i]=="p" and rtype_seq_temp[i+1]=="c" and rtype_seq_temp[i+2]=="c" and rtype_seq_temp[i-1]=="c" and rtype_seq_temp[i-2]=="c"
+
+        if(double_corner):
+            rtype_seq[i]="c"
+            print(i)        
+        elif(rtype_seq_temp[i]=="c" and rtype_seq_temp[i-1]=="p" and rtype_seq_temp[i+1]=="p"):
+            #print(i)
+            rtype_seq[i-1]="c"
+            rtype_seq[i+1]="c"
+    print(rtype_seq)
+    for i in range(1,len_path-1):    
+        if(i!=len_path-2 and i!=2):
+            if(rtype_seq[i-1]=="p" and rtype_seq[i]=="c" and rtype_seq[i+1]=="c" and rtype_seq[i+2]=="p" and rtype_seq[i-2]=="p"):
+                rtype_seq[i-1]="c"
+            elif(rtype_seq[i-1]=="p" and rtype_seq[i]=="c" and rtype_seq[i+1]=="c" and rtype_seq[i+2]=="p" and rtype_seq[i-2]=="c"):
+                rtype_seq[i+2]="c"
+    for i in range(1,len_path-1):
+        curr_path_type=path_type[k]
+        layer_unchange = (path_type[i+1] in group_A) == (path_type[i] in group_A)
+        rtype_unchange = rtype_seq[i]==rtype_seq[i+1]
+        info_temp=[curr_path_type,rtype_seq[k],k]
+        if(i==len_path-2):#最后一个单元
+            info_temp=[curr_path_type,rtype_seq[i],k]
+            #print(info_temp)
+            k=i 
+            info_temp.append(k)
+            info.append(info_temp)
+            k=k+1
+        elif(layer_unchange):
+            if(rtype_unchange):
+                pass
+            else:
+                print("rtype_change at {}".format(i))
+                k=i+1
+                info_temp.append(k)
+                info.append(info_temp)
+        else:
+            print("layer_change at {}".format(i))
+            k=i+1
+            info_temp.append(k)
+            info.append(info_temp)            
+            
+    #rec_itface
+    if(path_type[-2] in group_B):
+        info.append([path_coord[-1],last_check_index(index_seq[-1]),"mn0"])
+    elif(path_type[-2] in group_A):
+        info.append([path_coord[-1],last_check_index(index_seq[-1]),"mp1"])
+
+    '''len_info=len(info)
+    remove_list=[]
+    for t in range(1,len_info-1):
+        if(info[t][2]==info[t][3]):
+            remove_list.append(t)
+    for r in remove_list:
+        info.remove(info[r])'''
+    return info
+
+
+# In[2]:
+
+
+from SFQ_lib import *
+drv_out=4
+wire_width=22
+def path_to_pcell(info,path_coord,index_seq):
+    group_A=[1,2]
+    group_B=[3,4]
+    len_info=len(info)
+    script=[]
+    first_itface=interface(drv_out,wire_width,info[0][0],info[0][1],info[0][2])
+    script.append(first_itface)
+      
+    
+    for i in range(1,len_info-1):
+        if(info[i][1]=="p"):
+                
+            if((info[i+1][1]=="c" and info[i-1][1]=="c") and info[i][0] in group_B):
+                #print(i)
+                source=path_coord[info[i][2]]
+                dest=path_coord[info[i+1][2]]
+            elif((info[i+1][1]=="c" and info[i-1][1]=="c") and info[i][0] in group_A):#存在吗？mp1和mn0的链接必须有cross？（path）
+                #print(i)
+                source=path_coord[info[i-1][3]]
+                dest=path_coord[info[i+1][2]]
+                
+            elif(i==1 and info[i][0] in group_B and info[i+1][0] in group_A):
+                source=path_coord[info[i][2]]
+                dest=path_coord[info[i+1][2]-1]
+
+            elif(i==1 and info[i][0] in group_B and info[i+1][0] in group_B):
+                source=path_coord[info[i][2]]
+                dest=path_coord[info[i+1][2]]
+                
+            elif(i==len_info-2 and info[i][0] in group_B and info[i-1][0] in group_A):
+                [source,dest]=extend_port_path(path_coord[info[i][2]+1],path_coord[info[i][3]],index_seq[-1])
+                
+            elif(i==len_info-2 and info[i][0] in group_A and info[i-1][0] in group_A):
+                [source,dest]=[path_coord[info[i][2]],shorten_path(info[-1][0],info[-1][1])]
+                
+            elif(i==len_info-2 and info[i][0] in group_A and info[i-1][0] in group_B):
+                [source,dest]=extend_port_path(path_coord[info[i][2]],path_coord[info[i][3]],index_seq[-1])
+                
+            elif(i==len_info-2 and info[i][0] in group_B and info[i-1][0] in group_B):
+                #source=path_coord[info[i][2]]
+                #dest=path_coord[info[i][3]]                
+                [source,dest]=[path_coord[info[i][2]],shorten_path(info[-1][0],info[-1][1])]
+                
+            elif(info[i-1][1]=="c" and info[i][0] in group_B and info[i+1][0] in group_A and info[i-1][0] in group_B):
+                #print("yes")
+                source=path_coord[info[i][2]]
+                dest=path_coord[info[i][3]-1]
+
+            elif(info[i-1][1]=="c" and info[i][0] in group_A and info[i+1][0] in group_B and info[i-1][0] in group_A):
+                #print("yes")
+                source=path_coord[info[i][2]]
+                dest=path_coord[info[i][3]]
+                
+            elif(info[i+1][1]=="c" and info[i][0] in group_B and info[i-1][0] in group_A and info[i+1][0] in group_B):
+                #print("yes")
+                source=path_coord[info[i][2]+1]
+                dest=path_coord[info[i][3]]
+
+            elif(info[i-1][1]=="c" and info[i][0] in group_B and info[i-1][0] in group_A and info[i+1][0] in group_A):
+                #print("yes")
+                source=path_coord[info[i][2]+1]
+                dest=path_coord[info[i][3]-1]
+                
+            elif(info[i-1][1]=="c" and info[i][0] in group_B and info[i+1][0] in group_A):
+                #print("yes")
+                source=path_coord[info[i][2]+1]
+                dest=path_coord[info[i][3]+1]
+                
+            elif(info[i-1][1]=="c" and info[i][0] in group_A):
+                source=path_coord[info[i][2]+1]
+                dest=path_coord[info[i][3]+1]
+                
+            elif(info[i][0] in group_B and info[i+1][0] in group_A and info[i-1][0] in group_A):
+                #print("yes")
+                source=path_coord[info[i][2]+1]
+                dest=path_coord[info[i+1][2]-1]
+                
+            elif(info[i][0] in group_A and info[i+1][0] in group_B ):
+                source=path_coord[info[i][2]]
+                dest=path_coord[info[i][3]]  
+                
+            elif(info[i][0] in group_A and (info[i+1][0] in group_B and info[i-1][0] in group_B)):
+                source=path_coord[info[i][2]]
+                dest=path_coord[info[i][3]+1]
+              
+            else:
+                source=path_coord[info[i][2]]
+                dest=path_coord[info[i][3]]
+
+                
+
+            if((info[i][0] in group_B ) and ((info[i+1][0] in group_A ) and (info[i-1][0] in group_A))):
+                cross_i=cross(wire_width,path_coord[info[i][2]],index_seq[info[i][2]],last_check_index(index_seq[info[i][2]]))
+                path_i=path(source,dest,wire_width,index_to_layer(info[i][0]))
+                cross_ip1=cross(wire_width,path_coord[info[i][3]-1],index_seq[info[i][3]],index_seq[info[i][3]])
+                script.append(cross_i)
+                script.append(path_i)
+                script.append(cross_ip1)
+            elif(i==1 and info[i][0] in group_B and info[i+1][0] in group_A):
+                cross_i=cross(wire_width,path_coord[info[i+1][2]-1],index_seq[info[i][2]],index_seq[info[i][2]])
+                path_i=path(source,dest,wire_width,index_to_layer(info[i][0]))
+                script.append(cross_i)
+                script.append(path_i)
+                
+            elif(i==1 and info[i][0] in group_B and info[i+1][0] in group_B):
+                path_i=path(source,dest,wire_width,index_to_layer(info[i][0]))
+                script.append(path_i)       
+                
+            elif((info[i][0] in group_B ) and (info[i-1][0] in group_A)):
+                cross_i=cross(wire_width,path_coord[info[i][2]],index_seq[info[i][2]],last_check_index(index_seq[info[i][2]]))
+                path_i=path(source,dest,wire_width,index_to_layer(info[i][0]))
+                script.append(cross_i)
+                script.append(path_i)
+            elif((info[i][0] in group_B ) and (info[i+1][0] in group_A)):
+                cross_i=cross(wire_width,path_coord[info[i][3]-1],index_seq[info[i][3]],index_seq[info[i][3]])
+                path_i=path(source,dest,wire_width,index_to_layer(info[i][0]))
+                script.append(cross_i)
+                script.append(path_i)
+            elif(info[i][0] in group_A):
+                path_i=path(source,dest,wire_width,index_to_layer(info[i][0]))
+                script.append(path_i)
+            else:
+                #print(i)
+                path_i=path(source,dest,wire_width,index_to_layer(info[i][0]))       
+                script.append(path_i)
+
+        elif(info[i][1]=="c"):
+            #print(info[i])
+            #print(info[i-1])
+            #print(info[i+1])
+            group_C=[1,3]
+            group_D=[2,4]
+            same_index= (index_seq[info[i][3]] in group_C) == (index_seq[info[i][2]] in group_C)
+            print(same_index)
+            print(index_seq[info[i][3]],index_seq[info[i][2]])
+            if(same_index):
+                corner_width=abs(path_coord[info[i+1][2]][0]-path_coord[info[i][2]][0])/layout_unit_len
+            else:
+                corner_width=(abs(path_coord[info[i+1][2]][0]-path_coord[info[i][2]][0])+layout_unit_len/2)/layout_unit_len
+
+            print(path_coord[info[i][3]][0])
+            print(path_coord[info[i][2]][0])
+            print(corner_width)
+            wire_type=index_to_layer(info[i][0])
+            origin=path_coord[info[i][2]]
+            in_index=index_seq[info[i][2]]
+            out_index=index_seq[info[i][3]+1]
+            descend=get_descend(in_index,path_coord[info[i][2]],path_coord[info[i][3]])
+            corner_i=corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend)
+            script.append(corner_i)
+                    
+    last_itface=interface(drv_out,wire_width,info[-1][0],info[-1][1],info[-1][2])
+    script.append(last_itface)
+    return script
+
+
+# In[ ]:
+
+
+
 
