@@ -625,7 +625,7 @@ def layout_to_model(module_name,inst_name):#读取layout读出的module名和对
 # In[23]:
 
 
-def get_index_sequence(path,first_index,last_index):
+def get_index_sequence(path,first_index,last_index):#根据path的坐标来获取布线path的输入输出位面，同上按十字逆时针顺序左1下2右3上4
     len_path=len(path)
     sequence=[first_index]
     for i in range(0,len_path-1):
@@ -634,15 +634,15 @@ def get_index_sequence(path,first_index,last_index):
     sequence.append(last_index)
     return sequence
 
-path=[[9, 1], [8, 1], [7, 1], [6, 1], [5, 1], [4, 1], [3, 1], [2, 1], [2, 2], [2, 3], [2, 4], [2, 5], [2, 6], [2, 7], [2, 8], [2, 9]]
-test=get_index_sequence(path,1,4)
-print(test)
+#path=[[9, 1], [8, 1], [7, 1], [6, 1], [5, 1], [4, 1], [3, 1], [2, 1], [2, 2], [2, 3], [2, 4], [2, 5], [2, 6], [2, 7], [2, 8], [2, 9]]
+#test=get_index_sequence(path,1,4)
+#print(test)
 
 
 # In[24]:
 
 
-def get_route_type(index_sequence):
+def get_route_type(index_sequence):#根据path的index顺序来确定path的类型，是否为直线或者拐角
     len_index=len(index_sequence)
     rtype=[]
     for i in range(0,len_index-1):
@@ -652,16 +652,16 @@ def get_route_type(index_sequence):
             rtype.append("p")#path
     return rtype
 
-index_sequence=[1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4]
-test=get_route_type(index_sequence)
-print(test)
+#index_sequence=[1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+#test=get_route_type(index_sequence)
+#print(test)
 
 
 # In[25]:
 
 
 enlarge_coef=3
-def process_path_coord(coord_source,coord_dest,in_index,out_index,drv_out,wire_width,end_extend_type):
+def process_path_coord(coord_source,coord_dest,in_index,out_index,drv_out,wire_width,end_extend_type):#处理path的绝对坐标，已废弃
     itface_width=(wire_width-drv_out)/2+enlarge_coef
     path_extend=layout_unit_len-itface_width
     cross_extend=(layout_unit_len-(wire_width+2))/2
@@ -699,7 +699,7 @@ def process_path_coord(coord_source,coord_dest,in_index,out_index,drv_out,wire_w
 # In[26]:
 
 
-def pcell_coord(coord,in_index):
+def pcell_coord(coord,in_index):#把path的原点（默认在左下角）转到输入位面的中点
     if(in_index==1):
         origin=[coord[0]+layout_unit_len,coord[1]+layout_unit_len/2]
     elif(in_index==2):
@@ -716,7 +716,7 @@ def pcell_coord(coord,in_index):
 # In[27]:
 
 
-def index_to_layer(num):
+def index_to_layer(num):#把布线程序中用于区分mp1和mn0的数组1234转成mp1或mn0
     if(num==2 or num==1):
         return "mp1"
     else:
@@ -726,7 +726,7 @@ def index_to_layer(num):
 # In[28]:
 
 
-def get_descend(index,source,dest):
+def get_descend(index,source,dest):#用path的输入输出坐标来判断布线的走向是上浮还是下沉
     if(index==1 or index==3):
         if(source[1]-dest[1]>0):
             descend=1
@@ -743,7 +743,7 @@ def get_descend(index,source,dest):
 # In[31]:
 
 
-def extend_port_path(source,dest,index):
+def extend_port_path(source,dest,index):#拓展端口处的path长度
     rsource=source
     if(index==1):
         rdest=[dest[0]-layout_unit_len,dest[1]]
@@ -755,7 +755,7 @@ def extend_port_path(source,dest,index):
         rdest=[dest[0],dest[1]+layout_unit_len]
     return [rsource,rdest]
 
-def shorten_path(last_pts,last_index):
+def shorten_path(last_pts,last_index):#缩短path长度
     if(last_index==1):
         pts=[last_pts[0]-layout_unit_len,last_pts[1]]
     elif(last_index==2):
@@ -770,11 +770,11 @@ def shorten_path(last_pts,last_index):
 # In[1]:
 
 
-def analyze_path(path_coord,path_type,index_seq,rtype_seq):
+def analyze_path(path_coord,path_type,index_seq,rtype_seq):#分析astar输出的path坐标类型和index rtype等信息，输出布线的类型list
     info=[]
     #drv_itface
-    group_A=[1,2]
-    group_B=[3,4]
+    group_A=[1,2]#mp1组
+    group_B=[3,4]#mn0组
     if(path_type[1] in group_B):
         info.append([path_coord[0],index_seq[0],"mn0"])
     elif(path_type[1] in group_A):
@@ -784,47 +784,47 @@ def analyze_path(path_coord,path_type,index_seq,rtype_seq):
     len_path=len(path_coord)
     k=1
     rtype_seq_temp=[]
-    for r in rtype_seq:
+    for r in rtype_seq:#暂存一个rtype_seq，开始预处理c和p
         rtype_seq_temp.append(r)
-    for i in range(1,len_path-1):
-        if(i!=len_path-2 and i!=2):
+    for i in range(1,len_path-1):#处理corner，合并一些情况的corner
+        if(i!=len_path-2 and i!=2):#如果遇到ccpcc类型的corner
             double_corner=rtype_seq_temp[i]=="p" and rtype_seq_temp[i+1]=="c" and rtype_seq_temp[i+2]=="c" and rtype_seq_temp[i-1]=="c" and rtype_seq_temp[i-2]=="c"
 
-        if(double_corner):
+        if(double_corner):#如果遇到ccpcc类型的corner，则中间的p变为c
             rtype_seq[i]="c"
             print(i)        
-        elif(rtype_seq_temp[i]=="c" and rtype_seq_temp[i-1]=="p" and rtype_seq_temp[i+1]=="p"):
+        elif(rtype_seq_temp[i]=="c" and rtype_seq_temp[i-1]=="p" and rtype_seq_temp[i+1]=="p"):#然后把单c的前后p吸收为c
             #print(i)
             rtype_seq[i-1]="c"
             rtype_seq[i+1]="c"
     print(rtype_seq)
     for i in range(1,len_path-1):    
-        if(i!=len_path-2 and i!=2):
+        if(i!=len_path-2 and i!=2):#处理其他类型：
             if(rtype_seq[i-1]=="p" and rtype_seq[i]=="c" and rtype_seq[i+1]=="c" and rtype_seq[i+2]=="p" and rtype_seq[i-2]=="p"):
-                rtype_seq[i-1]="c"
+                rtype_seq[i-1]="c"#如果遇到ppccp则把i-1位置的p变为c
             elif(rtype_seq[i-1]=="p" and rtype_seq[i]=="c" and rtype_seq[i+1]=="c" and rtype_seq[i+2]=="p" and rtype_seq[i-2]=="c"):
-                rtype_seq[i+2]="c"
-    for i in range(1,len_path-1):
-        curr_path_type=path_type[k]
-        layer_unchange = (path_type[i+1] in group_A) == (path_type[i] in group_A)
-        rtype_unchange = rtype_seq[i]==rtype_seq[i+1]
-        info_temp=[curr_path_type,rtype_seq[k],k]
-        if(i==len_path-2):#最后一个单元
-            info_temp=[curr_path_type,rtype_seq[i],k]
+                rtype_seq[i+2]="c"#cpccp，则把i+2位置的p变为c
+    for i in range(1,len_path-1):#开始分析path
+        curr_path_type=path_type[k]#记录k位置的path类型
+        layer_unchange = (path_type[i+1] in group_A) == (path_type[i] in group_A)#如果连续两个path_type在同一组，说明layer没有发生变化
+        rtype_unchange = rtype_seq[i]==rtype_seq[i+1]#如果连续rtype没变，说明一直是p或者一直是c
+        info_temp=[curr_path_type,rtype_seq[k],k]#暂存k位置的各种信息
+        if(i==len_path-2):#获取最后一个模块的信息
+            info_temp=[curr_path_type,rtype_seq[i],k]#暂存i位置的信息
             #print(info_temp)
-            k=i 
+            k=i #记录当前的k
             info_temp.append(k)
-            info.append(info_temp)
+            info.append(info_temp)#写入info_temo到info中
             k=k+1
-        elif(layer_unchange):
+        elif(layer_unchange):#
             if(rtype_unchange):
-                pass
+                pass #如果层不变并且rtype也不变，则什么都不做
             else:
-                print("rtype_change at {}".format(i))
+                print("rtype_change at {}".format(i))#如果rtype变了，则从上一个k到这一个k，记录
                 k=i+1
                 info_temp.append(k)
                 info.append(info_temp)
-        else:
+        else:#如果layer变了，则从上一个k到这一个k，记录
             print("layer_change at {}".format(i))
             k=i+1
             info_temp.append(k)
@@ -857,12 +857,12 @@ def path_to_pcell(info,path_coord,index_seq):
     group_B=[3,4]
     len_info=len(info)
     script=[]
-    first_itface=interface(drv_out,wire_width,info[0][0],info[0][1],info[0][2])
+    first_itface=interface(drv_out,wire_width,info[0][0],info[0][1],info[0][2])#创立drv_interface的pycell
     script.append(first_itface)
       
     
-    for i in range(1,len_info-1):
-        if(info[i][1]=="p"):
+    for i in range(1,len_info-1):#判断除了interface之外的线
+        if(info[i][1]=="p"):#以下为各种情况，由于注释不好描述就不写了，debug主要靠画图
                 
             if((info[i+1][1]=="c" and info[i-1][1]=="c") and info[i][0] in group_B):
                 #print(i)
@@ -987,7 +987,7 @@ def path_to_pcell(info,path_coord,index_seq):
             same_index= (index_seq[info[i][3]] in group_C) == (index_seq[info[i][2]] in group_C)
             print(same_index)
             print(index_seq[info[i][3]],index_seq[info[i][2]])
-            if(same_index):
+            if(same_index):#根据输入输出的index来判断origin之差和模块长度的区别，做出相应的变化
                 corner_width=abs(path_coord[info[i+1][2]][0]-path_coord[info[i][2]][0])/layout_unit_len
             else:
                 corner_width=(abs(path_coord[info[i+1][2]][0]-path_coord[info[i][2]][0])+layout_unit_len/2)/layout_unit_len
@@ -1000,10 +1000,10 @@ def path_to_pcell(info,path_coord,index_seq):
             in_index=index_seq[info[i][2]]
             out_index=index_seq[info[i][3]+1]
             descend=get_descend(in_index,path_coord[info[i][2]],path_coord[info[i][3]])
-            corner_i=corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend)
+            corner_i=corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend)#以上为创立corner的pycell
             script.append(corner_i)
                     
-    last_itface=interface(drv_out,wire_width,info[-1][0],info[-1][1],info[-1][2])
+    last_itface=interface(drv_out,wire_width,info[-1][0],info[-1][1],info[-1][2])#最后一个，rec_interface
     script.append(last_itface)
     return script
 

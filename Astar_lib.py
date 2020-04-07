@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 # coding: utf-8
 
 # In[1]:
@@ -122,7 +122,7 @@ class Map():
             y=block_list[i][1]
             if(abs(x_prev-x_next)==1 and abs(y_prev-y_next)==1 and (self.map[y][x]==3 or self.map[y][x]==4)):
                 self.map[y_prev][x_prev]=3
-    def read_path_type(self,path):
+    def read_path_type(self,path):#获取path的type，并且把3和4设置成不可穿越的1型
         len_path=len(path)
         line_info=[]
         for i in range(0,len_path):
@@ -140,18 +140,17 @@ class Map():
             x=block_list[i][0]
             y=block_list[i][1]
             self.map[y][x] = 0;
-    def get_blocked_point(self,block_list):
+            
+    def get_blocked_point(self,block_list):#用来检查block_list里的点是否原来就是封死的，返回一个原来是封死的list，防止clrblock时把原来的也清掉了
         block_list_len=len(block_list)
-        prev_block=[]
         for i in range(0,block_list_len):
             x=block_list[i][0]
             y=block_list[i][1]
-
-            print(x,y)
+            prev_block=[]
             if(self.map[y][x]==1):
                 prev_block.append([x,y])
         return prev_block
-        
+    
     def showMap(self):
         print("+" * (3 * self.width + 2))
         len_row=len(self.map)
@@ -440,6 +439,142 @@ def multi_map_search(file_dir,lib,cell,display,layer_num):
         for j in range(0,len_script):
             print(script[j],file=text)#将dbcreate脚本字符串写进text中输出
     text.close()    
+
+
+# In[ ]:
+
+
+def cross_map_search(file_dir,lib,cell,display):
+    info=map_info(file_dir)
+    width=info[0]
+    height=info[1]
+    layout_map=Map(width,height)
+    #layout_map.showMap()
+    layout_info=info[2]
+    len_layout=len(layout_info)
+    map_origin=info[3]
+    for i in range(0,len_layout):
+        #print(layout_info[i].area)
+        block_point=origin_to_blockpoint_prev(layout_info[i].area,layout_info[i].xy,layout_info[i].orient)
+        #print(block_point)
+        abs_point=get_abs_block_point(map_origin,block_point)
+        #print(abs_point)
+        layout_map.setBlock(abs_point)
+        #layout_map.showMap()
+    #layout_map.showMap()
+    #开始寻路
+    coord_info=info[4]
+
+    connection_info=info[5]
+    
+    #print(coord_info)#提示一下要连线的路径
+
+    coord_len=len(coord_info)
+    text=open("./createinst.il",'w+')
+    cellid='''cellID=dbOpenCellViewByType("{0}" "{1}" "layout" "maskLayout")'''.format(lib,cell)#这里以后改，dbopen函数
+    print(cellid,file=text)
+    for i in range(0,coord_len):#封锁端口，先把所有端口都封上，在布每一条线的时候再单独打开（clrBlock函数）
+        port_1_temp=port_coord_to_map(coord_info[i][0][0],coord_info[i][0][1])#获取第一个端口坐标 map中的
+        port_1=[port_1_temp[0]-map_origin[0],port_1_temp[1]-map_origin[1]]#获取第一个端口的绝对坐标 map中的
+        port_2_temp=port_coord_to_map(coord_info[i][1][0],coord_info[i][1][1])#同上
+        port_2=[port_2_temp[0]-map_origin[0],port_2_temp[1]-map_origin[1]]#同上上
+        block_source=[port_2[0],port_2[1]]#获取出发点
+        block_dest=[port_1[0],port_1[1]]#获取终点
+        layout_map.setBlock([block_source,block_dest])
+    #layout_map.showMap()
+    for i in range(0,coord_len):#????coord怎么和layout def里面的不一样
+        port_1_temp=port_coord_to_map(coord_info[i][0][0],coord_info[i][0][1])#获取第一个端口坐标 map中的
+        port_1=[port_1_temp[0]-map_origin[0],port_1_temp[1]-map_origin[1]]#获取第一个端口的绝对坐标 map中的
+        port_2_temp=port_coord_to_map(coord_info[i][1][0],coord_info[i][1][1])#同上
+        port_2=[port_2_temp[0]-map_origin[0],port_2_temp[1]-map_origin[1]]#同上上
+        layout_map.clrBlock([[port_2[0],port_2[1]],[port_1[0],port_1[1]]])#先清除掉要布线的这条路径的端口block，不然就找不到valid path
+        #print(port_1,coord_info[i][0][1])
+        layout_map.showMap()
+        regulate_point1=regulate_route(port_1,coord_info[i][0][1],map_origin)
+        regulate_point2=regulate_route(port_2,coord_info[i][1][1],map_origin)
+        print(regulate_point1)
+        prev_block_1=layout_map.get_blocked_point(regulate_point1)
+        prev_block_2=layout_map.get_blocked_point(regulate_point2)
+        print(prev_block_1)
+        print(prev_block_2)
+        layout_map.setBlock(regulate_point1)
+        layout_map.setBlock(regulate_point2)
+        layout_map.showMap()
+
+        source=(port_2[0],port_2[1])#获取出发点
+        dest=(port_1[0],port_1[1])#获取终点
+        path=AStarSearch(layout_map,source,dest)#A星算path
+        layout_map.setBlock_cross(path)#把这条path添加到库中
+        return_path=layout_map.read_path_type(path)
+        #print(return_path)
+        temp=[coord_info[i][1],coord_info[i][0]]#只能用temp来重新排一下coord_info了
+        new_path=[]
+        len_path=len(path)
+        for k in range(0,len_path):
+            new_path.append([path[k][0]+map_origin[0],path[k][1]+map_origin[1]])#把还原的path坐标写入new path中
+        #print(new_path)
+        index_seq=get_index_sequence(new_path,coord_info[i][1][1],last_check_index(coord_info[i][0][1])) #注意！！！这里的first和lastindex都是手动设置的，注意改
+        #print(index_seq)
+        rtype_seq=get_route_type(index_seq)
+        for i in range(0,len_path-1):
+            new_path[i]=[new_path[i][0]*30,new_path[i][1]*30]
+            new_path[i]=pcell_coord(new_path[i],index_seq[i])
+        new_path[-1]=[new_path[-1][0]*30,new_path[-1][1]*30]
+        new_path[-1]=pcell_coord(new_path[-1],last_check_index(index_seq[-1]))            
+        info=analyze_path(new_path,return_path,index_seq,rtype_seq)
+
+        script=path_to_pcell(info,new_path,index_seq)
+        #for s in script:
+        #    print(s)
+        '''script=path_to_inst(new_path,temp,0,connection_info[i][0]+'_'+connection_info[i][2],0)#输入path 获取dbcreate脚本'''
+        len_script=len(script)
+        for j in range(0,len_script):
+            print(script[j],file=text)#将dbcreate脚本字符串写进text中输出'''
+        if(display==1):#显示函数，如果电路规模过大建议display置零
+            print("source:{0} to destination:{1}".format(source,dest))
+            print("path:{0}".format(new_path))
+            layout_map.showMap()
+        layout_map.clrBlock(regulate_point1)
+        layout_map.clrBlock(regulate_point2)
+        layout_map.setBlock(prev_block_1)
+        layout_map.setBlock(prev_block_2)
+        layout_map.showMap()
+        layout_map.setBlock([[port_2[0],port_2[1]],[port_1[0],port_1[1]]])
+    text.close()
+#display=1
+#cross_map_search("whatever.v",'ysc_layout2','auto_route',display)
+
+
+# In[1]:
+
+
+def regulate_route(coord,index,map_origin):
+    if(index==1):
+        regulate_p1=[coord[0],coord[1]+1]
+        regulate_p2=[coord[0],coord[1]-1]
+        regulate_p3=[coord[0]-1,coord[1]+1]
+        regulate_p4=[coord[0]-1,coord[1]-1]
+    elif(index==2):
+        regulate_p1=[coord[0]+1,coord[1]]
+        regulate_p2=[coord[0]-1,coord[1]]
+        regulate_p3=[coord[0]+1,coord[1]-1]
+        regulate_p4=[coord[0]-1,coord[1]-1]
+    elif(index==3):
+        regulate_p1=[coord[0],coord[1]+1]
+        regulate_p2=[coord[0],coord[1]-1]
+        regulate_p3=[coord[0]+1,coord[1]+1]
+        regulate_p4=[coord[0]+1,coord[1]-1]
+    elif(index==4):
+        regulate_p1=[coord[0]+1,coord[1]]
+        regulate_p2=[coord[0]-1,coord[1]]
+        regulate_p3=[coord[0]+1,coord[1]+1]
+        regulate_p4=[coord[0]-1,coord[1]+1]
+    #print(regulate_p1)
+    #print(regulate_p2)
+    #print(regulate_p3)
+    #print(regulate_p4)
+    abs_list=[regulate_p1,regulate_p2,regulate_p3,regulate_p4]
+    return abs_list
 
 
 # In[6]:
