@@ -792,12 +792,12 @@ def analyze_path(path_coord,path_type,index_seq,rtype_seq):#分析astar输出的
 
         if(double_corner):#如果遇到ccpcc类型的corner，则中间的p变为c
             rtype_seq[i]="c"
-            print(i)        
+            #print(i)        
         elif(rtype_seq_temp[i]=="c" and rtype_seq_temp[i-1]=="p" and rtype_seq_temp[i+1]=="p"):#然后把单c的前后p吸收为c
             #print(i)
             rtype_seq[i-1]="c"
             rtype_seq[i+1]="c"
-    print(rtype_seq)
+    #print(rtype_seq)
     for i in range(1,len_path-1):    
         if(i!=len_path-2 and i!=2):#处理其他类型：
             if(rtype_seq[i-1]=="p" and rtype_seq[i]=="c" and rtype_seq[i+1]=="c" and rtype_seq[i+2]=="p" and rtype_seq[i-2]=="p"):
@@ -820,12 +820,12 @@ def analyze_path(path_coord,path_type,index_seq,rtype_seq):#分析astar输出的
             if(rtype_unchange):
                 pass #如果层不变并且rtype也不变，则什么都不做
             else:
-                print("rtype_change at {}".format(i))#如果rtype变了，则从上一个k到这一个k，记录
+                #print("rtype_change at {}".format(i))#如果rtype变了，则从上一个k到这一个k，记录
                 k=i+1
                 info_temp.append(k)
                 info.append(info_temp)
         else:#如果layer变了，则从上一个k到这一个k，记录
-            print("layer_change at {}".format(i))
+            #print("layer_change at {}".format(i))
             k=i+1
             info_temp.append(k)
             info.append(info_temp)            
@@ -846,7 +846,7 @@ def analyze_path(path_coord,path_type,index_seq,rtype_seq):#分析astar输出的
     return info
 
 
-# In[2]:
+# In[1]:
 
 
 from SFQ_lib import *
@@ -985,16 +985,16 @@ def path_to_pcell(info,path_coord,index_seq):
             group_C=[1,3]
             group_D=[2,4]
             same_index= (index_seq[info[i][3]] in group_C) == (index_seq[info[i][2]] in group_C)
-            print(same_index)
-            print(index_seq[info[i][3]],index_seq[info[i][2]])
+            #print(same_index)
+            #print(index_seq[info[i][3]],index_seq[info[i][2]])
             if(same_index):#根据输入输出的index来判断origin之差和模块长度的区别，做出相应的变化
                 corner_width=abs(path_coord[info[i+1][2]][0]-path_coord[info[i][2]][0])/layout_unit_len
             else:
                 corner_width=(abs(path_coord[info[i+1][2]][0]-path_coord[info[i][2]][0])+layout_unit_len/2)/layout_unit_len
 
-            print(path_coord[info[i][3]][0])
-            print(path_coord[info[i][2]][0])
-            print(corner_width)
+            #print(path_coord[info[i][3]][0])
+            #print(path_coord[info[i][2]][0])
+            #print(corner_width)
             wire_type=index_to_layer(info[i][0])
             origin=path_coord[info[i][2]]
             in_index=index_seq[info[i][2]]
