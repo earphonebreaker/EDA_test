@@ -1043,16 +1043,16 @@ rodCreatePolygon(?cvId cellID ?layer "in0" ?fromObj ref ?size -1)
 rodCreatePolygon(?cvId cellID ?layer "mp1" ?fromObj ref ?size 1)'''.format(p1[0],p1[1],p2[0],p2[1],p3[0],p3[1],p4[0],p4[1])
     if(ctype==1):
         ad_path1=path([center[0]-layout_unit_len/2,center[1]],[center[0]-width/2-1,center[1]],width,"mp1")
-        ad_path2=path([center[0]+width/2+1,center[1]],[center[0]+layout_unit_len/2,center[1]],width,"mn0")
+        ad_path2=path([center[0]+width/2,center[1]],[center[0]+layout_unit_len/2,center[1]],width,"mn0")
     elif(ctype==2):
         ad_path1=path([center[0],center[1]-layout_unit_len/2],[center[0],center[1]-width/2-1],width,"mp1")
-        ad_path2=path([center[0],center[1]+width/2+1],[center[0],center[1]+layout_unit_len/2],width,"mn0")
+        ad_path2=path([center[0],center[1]+width/2],[center[0],center[1]+layout_unit_len/2],width,"mn0")
     elif(ctype==3):
         ad_path1=path([center[0]+width/2+1,center[1]],[center[0]+layout_unit_len/2,center[1]],width,"mp1")
-        ad_path2=path([center[0]-layout_unit_len/2,center[1]],[center[0]-width/2-1,center[1]],width,"mn0")
+        ad_path2=path([center[0]-layout_unit_len/2,center[1]],[center[0]-width/2,center[1]],width,"mn0")
     elif(ctype==4):
         ad_path1=path([center[0],center[1]+width/2+1],[center[0],center[1]+layout_unit_len/2],width,"mp1")
-        ad_path2=path([center[0],center[1]-layout_unit_len/2],[center[0],center[1]-width/2-1],width,"mn0")
+        ad_path2=path([center[0],center[1]-layout_unit_len/2],[center[0],center[1]-width/2],width,"mn0")
     return script+ad_path1+ad_path2
 #test=cross(22,[110,10],2,3)
 #print(test)
