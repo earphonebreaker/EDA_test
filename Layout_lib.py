@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 
 #2020/2/27 杨树澄
 #整合layout相关的函数库
 
 
-# In[3]:
+# In[2]:
 
 
 from pylab import *
@@ -18,7 +18,7 @@ import sys
 import re
 
 
-# In[4]:
+# In[3]:
 
 
 def floor_to_decimal(num): #把bBox误差出来的小数都去掉
@@ -26,7 +26,7 @@ def floor_to_decimal(num): #把bBox误差出来的小数都去掉
     return int(round(num/index))*index #返回一个整数型的值
 
 
-# In[5]:
+# In[4]:
 
 
 def read_layout(filename): #io接口，用来读取SKILL输出的版图信息
@@ -73,7 +73,7 @@ def read_layout(filename): #io接口，用来读取SKILL输出的版图信息
     return [instance_info, orient_info, bBox_info,xy_info,inst_name_info]
 
 
-# In[6]:
+# In[5]:
 
 
 def layout_info_summary(filename):#数据顺序：model，方向，bBox，起始点,汇总到一个info变量里，每一个model的前述所有信息写入对应的class
@@ -88,7 +88,7 @@ def layout_info_summary(filename):#数据顺序：model，方向，bBox，起始
     return layout_info_out
 
 
-# In[7]:
+# In[6]:
 
 
 def connect_info_process(connection): #重新整理netlist reader输出的互联信息
@@ -99,7 +99,7 @@ def connect_info_process(connection): #重新整理netlist reader输出的互联
     return connection_info
 
 
-# In[8]:
+# In[7]:
 
 
 def port_rearrangement(SFQmodel):#重新整理SFQ model中的port顺序（按照SFQ lib 里给出的port sequence）
@@ -114,7 +114,7 @@ def port_rearrangement(SFQmodel):#重新整理SFQ model中的port顺序（按照
     return wire_name
 
 
-# In[9]:
+# In[8]:
 
 
 def layout_to_dict(layout_info):#把layout中的信息整理到dictionary中，以便于查找两个互联器件的信息
@@ -138,7 +138,7 @@ def layout_to_dict(layout_info):#把layout中的信息整理到dictionary中，�
     return dict_inst_to_wire
 
 
-# In[10]:
+# In[9]:
 
 
 def get_route_coord(connection_info,dict_inst_to_wire):#获取port到port的绝对坐标
@@ -168,7 +168,7 @@ def get_route_coord(connection_info,dict_inst_to_wire):#获取port到port的绝�
     return routing_coord
 
 
-# In[11]:
+# In[10]:
 
 
 def to_dbCreate(model,instname,coord,orient):#dbCreate生成模块
@@ -183,7 +183,7 @@ def to_dbCreate(model,instname,coord,orient):#dbCreate生成模块
     return dbcreate
 
 
-# In[12]:
+# In[11]:
 
 
 def route_direction(first_location,second_location):#根据例化前后两个layout_unit_len单位单元的信息来确定path的方向
@@ -203,7 +203,7 @@ def route_direction(first_location,second_location):#根据例化前后两个lay
     return fir_to_sec
 
 
-# In[13]:
+# In[12]:
 
 
 def last_check_index(index):#替换掉目标port的位置信息
@@ -218,7 +218,7 @@ def last_check_index(index):#替换掉目标port的位置信息
     return last_index
 
 
-# In[14]:
+# In[13]:
 
 
 def direction_to_inst(input_direction,output_direction,layer):#根据前后path的方向来确定输出到dbcreate中的模型，方向，相对原点等信息
@@ -287,7 +287,7 @@ def direction_to_inst(input_direction,output_direction,layer):#根据前后path�
     return [model,orient,origin]
 
 
-# In[15]:
+# In[14]:
 
 
 def path_to_inst(path,coord_info,index,name,layer):#根据path和两个版图之间的信息来建立il-dbcreate所需的字符串
@@ -319,7 +319,7 @@ def path_to_inst(path,coord_info,index,name,layer):#根据path和两个版图之
     return script
 
 
-# In[16]:
+# In[15]:
 
 
 def origin_to_blockpoint(area,origin,orient):#根据每个SFQmodel的面积，原点，方向，生成一系列在map上的block点（line不能穿过的地方）
@@ -414,7 +414,7 @@ def origin_to_blockpoint(area,origin,orient):#根据每个SFQmodel的面积，�
     return rel_block_point
 
 
-# In[17]:
+# In[16]:
 
 
 def get_abs_block_point(layout_origin,block_point):#把block点的相对坐标转化到map中的绝对位置
@@ -428,7 +428,67 @@ def get_abs_block_point(layout_origin,block_point):#把block点的相对坐标�
     return abs_point
 
 
-# In[18]:
+# In[ ]:
+
+
+def origin_to_blockpoint_enlarged(area,origin,orient):#根据每个SFQmodel的面积，原点，方向，生成一系列在map上的block点（line不能穿过的地方）
+    x=area[0]+2
+    y=area[1]+2
+    if(orient=="R0"):
+        rel_block_point=[]
+        for i in range(0,x):
+            for j in range(0,y):
+                rel_block_point.append([int(origin[0]/layout_unit_len-1+i),int(origin[1]/layout_unit_len-1+j)])
+
+    elif(orient=="R90"):
+        rel_block_point=[]
+        for i in range(0,x):
+            for j in range(0,y):
+                rel_block_point.append([int((origin[0]-layout_unit_len)/layout_unit_len-j+1),int(origin[1]/layout_unit_len+i-1)])
+
+    elif(orient=="R180"):
+        rel_block_point=[]
+        for i in range(0,x):
+            for j in range(0,y):
+                rel_block_point.append([int((origin[0]-layout_unit_len)/layout_unit_len-i+1),int((origin[1]-layout_unit_len)/layout_unit_len-j+1)])
+
+    elif(orient=="R270"):
+        rel_block_point=[]
+        for i in range(0,x):
+            for j in range(0,y):
+                rel_block_point.append([int(origin[0]/layout_unit_len+j-1),int((origin[1]-layout_unit_len)/layout_unit_len-i+1)])
+
+
+    elif(orient=="MX"):
+        rel_block_point=[]
+        for i in range(0,x):
+            for j in range(0,y):
+                rel_block_point.append([int(origin[0]/layout_unit_len+i-1),int((origin[1]-layout_unit_len)/layout_unit_len-j+1)])
+
+
+    elif(orient=="MXR90"):
+        rel_block_point=[]
+        for i in range(0,x):
+            for j in range(0,y):
+                rel_block_point.append([int(origin[0]/layout_unit_len+j-1),int(origin[1]/layout_unit_len+i-1)])
+
+
+    elif(orient=="MY"):
+        rel_block_point=[]
+        for i in range(0,x):
+            for j in range(0,y):
+                rel_block_point.append([int((origin[0]-layout_unit_len)/layout_unit_len-i+1),int(origin[1]/layout_unit_len+j-1)])
+
+    elif(orient=="MYR90"):
+        rel_block_point=[]
+        for i in range(0,x):
+            for j in range(0,y):
+                rel_block_point.append([int((origin[0]-layout_unit_len)/layout_unit_len-j+1),int((origin[1]-layout_unit_len)/layout_unit_len-i+1)])
+
+    return rel_block_point
+
+
+# In[17]:
 
 
 def origin_to_blockpoint_prev(area,origin,orient):#原版的block函数
@@ -475,7 +535,7 @@ def origin_to_blockpoint_prev(area,origin,orient):#原版的block函数
     return rel_block_point
 
 
-# In[19]:
+# In[18]:
 
 
 def get_abs_coord(orient,origin,relative_coord,index):#根据端口的相对坐标、版图原点和方向来确定端口在整个空间的绝对坐标
@@ -550,7 +610,7 @@ def get_abs_coord(orient,origin,relative_coord,index):#根据端口的相对坐�
 #    print(test)
 
 
-# In[20]:
+# In[19]:
 
 
 def port_coord_to_map(coord,index):#绘制地图时端口坐标转回左下点
@@ -565,7 +625,7 @@ def port_coord_to_map(coord,index):#绘制地图时端口坐标转回左下点
     return new_coord
 
 
-# In[21]:
+# In[20]:
 
 
 def port_location(number,area):#根据端口位置序号和面积类型来判断端口与原点的相对位置
@@ -595,7 +655,7 @@ def port_location(number,area):#根据端口位置序号和面积类型来判断
 #    print(test)
 
 
-# In[22]:
+# In[21]:
 
 
 def layout_to_model(module_name,inst_name):#读取layout读出的module名和对应的inst名，获得一个来自SFQlib的model
@@ -622,7 +682,7 @@ def layout_to_model(module_name,inst_name):#读取layout读出的module名和对
 #k=info_to_model(t[0][0],t[4][0])
 
 
-# In[23]:
+# In[22]:
 
 
 def get_index_sequence(path,first_index,last_index):#根据path的坐标来获取布线path的输入输出位面，同上按十字逆时针顺序左1下2右3上4
@@ -639,7 +699,7 @@ def get_index_sequence(path,first_index,last_index):#根据path的坐标来获�
 #print(test)
 
 
-# In[24]:
+# In[23]:
 
 
 def get_route_type(index_sequence):#根据path的index顺序来确定path的类型，是否为直线或者拐角
@@ -657,7 +717,7 @@ def get_route_type(index_sequence):#根据path的index顺序来确定path的类�
 #print(test)
 
 
-# In[25]:
+# In[24]:
 
 
 enlarge_coef=3
@@ -696,7 +756,7 @@ def process_path_coord(coord_source,coord_dest,in_index,out_index,drv_out,wire_w
     return [source,dest]
 
 
-# In[26]:
+# In[25]:
 
 
 def pcell_coord(coord,in_index):#把path的原点（默认在左下角）转到输入位面的中点
@@ -713,7 +773,7 @@ def pcell_coord(coord,in_index):#把path的原点（默认在左下角）转到�
     
 
 
-# In[27]:
+# In[26]:
 
 
 def index_to_layer(num):#把布线程序中用于区分mp1和mn0的数组1234转成mp1或mn0
@@ -723,7 +783,7 @@ def index_to_layer(num):#把布线程序中用于区分mp1和mn0的数组1234转
         return "mn0"
 
 
-# In[28]:
+# In[27]:
 
 
 def get_descend(index,source,dest):#用path的输入输出坐标来判断布线的走向是上浮还是下沉
@@ -740,7 +800,7 @@ def get_descend(index,source,dest):#用path的输入输出坐标来判断布线�
     return descend
 
 
-# In[31]:
+# In[28]:
 
 
 def extend_port_path(source,dest,index):#拓展端口处的path长度
@@ -767,10 +827,10 @@ def shorten_path(last_pts,last_index):#缩短path长度
     return pts          
 
 
-# In[1]:
+# In[30]:
 
 
-def analyze_path(path_coord,path_type,index_seq,rtype_seq):#分析astar输出的path坐标类型和index rtype等信息，输出布线的类型list
+def analyze_path(path_coord,path_type,index_seq,rtype_seq,std_path_coord):#分析astar输出的path坐标类型和index rtype等信息，输出布线的类型list
     info=[]
     #drv_itface
     group_A=[1,2]#mp1组
@@ -836,38 +896,93 @@ def analyze_path(path_coord,path_type,index_seq,rtype_seq):#分析astar输出的
     elif(path_type[-2] in group_A):
         info.append([path_coord[-1],last_check_index(index_seq[-1]),"mp1"])
 
-    '''len_info=len(info)
-    remove_list=[]
-    for t in range(1,len_info-1):
-        if(info[t][2]==info[t][3]):
-            remove_list.append(t)
-    for r in remove_list:
-        info.remove(info[r])'''
+    #corner_width=(abs(path_coord[index_temp][0]-path_coord[info[i][2]][0])+layout_unit_len)/layout_unit_len
+    len_info=len(info)
+    print(info)
+
+    for i in range(2,len_info-2):#如果x>y大于两个单位？
+        group_C=[1,3]
+        group_D=[2,4]
+        if(info[i][1]=="c"):
+            print(info[i])
+            start=info[i][2]
+            end=info[i][3]-1
+            start_index=index_seq[start]
+            end_index=index_seq[end]
+            start_std_coord=std_path_coord[start]
+            end_std_coord=std_path_coord[end]
+            x_delta=abs(start_std_coord[0]-end_std_coord[0])
+            y_delta=abs(start_std_coord[1]-end_std_coord[1])
+            prev_path_length=abs(info[i-1][2]-info[i-1][3])
+            next_path_length=abs(info[i+1][2]-info[i+1][3])
+            if(x_delta>y_delta):
+                if(start_index in group_D and end_index in group_C):
+                    info[i][3]=info[i][3]-1
+                    info[i+1][2]=info[i+1][2]-1
+                elif(start_index in group_C and end_index in group_D):
+                    info[i][2]=info[i][2]+1
+                    info[i-1][3]=info[i-1][3]+1
+                elif((start_index in group_C and end_index in group_C) or (start_index in group_D and end_index in group_D)):
+                    if(prev_path_length>next_path_length):
+                        info[i][2]=info[i][2]-1
+                        info[i-1][3]=info[i-1][3]-1
+                    else:
+                        info[i][3]=info[i][3]+1
+                        info[i+1][2]=info[i+1][2]+1
+            elif(x_delta<y_delta):
+                if(start_index in group_C and end_index in group_D):
+                    info[i][3]=info[i][3]-1
+                    info[i+1][2]=info[i+1][2]-1
+                elif(start_index in group_D and end_index in group_C):
+                    info[i][2]=info[i][2]+1
+                    info[i-1][3]=info[i-1][3]+1
+                elif((start_index in group_C and end_index in group_C) or (start_index in group_D and end_index in group_D)):
+                    if(prev_path_length>next_path_length):
+                        info[i][2]=info[i][2]-1
+                        info[i-1][3]=info[i-1][3]-1
+                    else:
+                        info[i][3]=info[i][3]+1
+                        info[i+1][2]=info[i+1][2]+1
     return info
 
 
 # In[1]:
 
 
-from SFQ_lib import *
-drv_out=4
-wire_width=22
 def path_to_pcell(info,path_coord,index_seq):
+    print(info)
     group_A=[1,2]
     group_B=[3,4]
     len_info=len(info)
     script=[]
-    first_itface=interface(drv_out,wire_width,info[0][0],info[0][1],info[0][2])#创立drv_interface的pycell
+    first_itface=interface(drv_out,wire_width,info[0][0],info[0][1],info[0][2])
     script.append(first_itface)
       
     
-    for i in range(1,len_info-1):#判断除了interface之外的线
-        if(info[i][1]=="p"):#以下为各种情况，由于注释不好描述就不写了，debug主要靠画图
+    for i in range(1,len_info-1):
+        if(len_info==3):
+            #print("yes")
+            source_t=path_coord[info[1][2]]
+            dest_t=path_coord[info[1][3]]
+            [source,dest]=extend_port_path(source_t,dest_t,last_check_index(info[1][0]))
+            path_i=path(source,dest,wire_width,index_to_layer(info[1][0]))
+            script.append(path_i)             
+        elif(info[i][1]=="p"):
                 
-            if((info[i+1][1]=="c" and info[i-1][1]=="c") and info[i][0] in group_B):
+
+            if((info[i+1][1]=="c" and info[i-1][1]=="c") and info[i][0] in group_B and info[i+1][0] in group_B and info[i-1][0] in group_A):
+                print("Yes",i)
+                source=path_coord[info[i-1][3]]
+                dest=path_coord[info[i+1][2]-1]
+            elif((info[i+1][1]=="c" and info[i-1][1]=="c") and info[i][0] in group_B and info[i+1][0] in group_A and info[i-1][0] in group_A):
+                #print(i)
+                source=path_coord[info[i][2]+1]
+                dest=path_coord[info[i+1][2]-1]
+            elif((info[i+1][1]=="c" and info[i-1][1]=="c") and info[i][0] in group_B):
                 #print(i)
                 source=path_coord[info[i][2]]
                 dest=path_coord[info[i+1][2]]
+
             elif((info[i+1][1]=="c" and info[i-1][1]=="c") and info[i][0] in group_A):#存在吗？mp1和mn0的链接必须有cross？（path）
                 #print(i)
                 source=path_coord[info[i-1][3]]
@@ -894,6 +1009,7 @@ def path_to_pcell(info,path_coord,index_seq):
                 #source=path_coord[info[i][2]]
                 #dest=path_coord[info[i][3]]                
                 [source,dest]=[path_coord[info[i][2]],shorten_path(info[-1][0],info[-1][1])]
+                #[source,dest]=extend_port_path(path_coord[info[i][2]],path_coord[info[i][3]],index_seq[-1])
                 
             elif(info[i-1][1]=="c" and info[i][0] in group_B and info[i+1][0] in group_A and info[i-1][0] in group_B):
                 #print("yes")
@@ -987,23 +1103,57 @@ def path_to_pcell(info,path_coord,index_seq):
             same_index= (index_seq[info[i][3]] in group_C) == (index_seq[info[i][2]] in group_C)
             #print(same_index)
             #print(index_seq[info[i][3]],index_seq[info[i][2]])
-            if(same_index):#根据输入输出的index来判断origin之差和模块长度的区别，做出相应的变化
-                corner_width=abs(path_coord[info[i+1][2]][0]-path_coord[info[i][2]][0])/layout_unit_len
-            else:
-                corner_width=(abs(path_coord[info[i+1][2]][0]-path_coord[info[i][2]][0])+layout_unit_len/2)/layout_unit_len
 
-            #print(path_coord[info[i][3]][0])
-            #print(path_coord[info[i][2]][0])
+
+            print(path_coord[info[i][2]][0])
+            if(i==len_info-2):
+                index_temp=info[i][3]
+            else:
+                index_temp=info[i][3]-1
+            same_index= (index_seq[index_temp] in group_C) == (index_seq[info[i][2]] in group_C)
+
+            if(index_seq[info[i][2]]==1):
+                if(same_index):
+                    corner_width=(abs(path_coord[index_temp][0]-path_coord[info[i][2]][0])+layout_unit_len)/layout_unit_len
+                else:
+                    corner_width=(abs(path_coord[index_temp][0]-path_coord[info[i][2]][0])+layout_unit_len/2)/layout_unit_len
+
+            elif(index_seq[info[i][2]]==2):
+                if(same_index):
+                    corner_width=(abs(path_coord[index_temp][0]-path_coord[info[i][2]][0])+layout_unit_len)/layout_unit_len
+                else:
+                    corner_width=(abs(path_coord[index_temp][0]-path_coord[info[i][2]][0])+3*layout_unit_len/2)/layout_unit_len
+            elif(index_seq[info[i][2]]==3):
+                if(same_index):
+                    corner_width=(abs(path_coord[index_temp][0]-path_coord[info[i][2]][0])+layout_unit_len)/layout_unit_len
+                else:
+                    corner_width=(abs(path_coord[index_temp][0]-path_coord[info[i][2]][0])+layout_unit_len/2)/layout_unit_len
+            elif(index_seq[info[i][2]]==4):
+                if(same_index):
+                    corner_width=(abs(path_coord[index_temp][0]-path_coord[info[i][2]][0])+layout_unit_len)/layout_unit_len
+                else:
+                    corner_width=(abs(path_coord[index_temp][0]-path_coord[info[i][2]][0])+3*layout_unit_len/2)/layout_unit_len
+            '''if(i==len_info-2):
+                if(same_index):
+                    corner_width=abs(path_coord[info[i][3]][0]-path_coord[info[i][2]][0]+layout_unit_len)/layout_unit_len
+                else:
+                    corner_width=(abs(path_coord[info[i][3]][0]-path_coord[info[i][2]][0])+3*layout_unit_len/2)/layout_unit_len
+            else:
+                if(same_index):
+                    corner_width=abs(path_coord[info[i+1][2]][0]-path_coord[info[i][2]][0])/layout_unit_len
+                else:
+                    corner_width=(abs(path_coord[info[i+1][2]][0]-path_coord[info[i][2]][0])+layout_unit_len/2)/layout_unit_len'''
+
             #print(corner_width)
             wire_type=index_to_layer(info[i][0])
             origin=path_coord[info[i][2]]
             in_index=index_seq[info[i][2]]
             out_index=index_seq[info[i][3]+1]
             descend=get_descend(in_index,path_coord[info[i][2]],path_coord[info[i][3]])
-            corner_i=corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend)#以上为创立corner的pycell
+            corner_i=corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend)
             script.append(corner_i)
                     
-    last_itface=interface(drv_out,wire_width,info[-1][0],info[-1][1],info[-1][2])#最后一个，rec_interface
+    last_itface=interface(drv_out,wire_width,info[-1][0],info[-1][1],info[-1][2])
     script.append(last_itface)
     return script
 

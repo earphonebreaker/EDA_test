@@ -23,7 +23,8 @@ map_offset=5
 
 # In[2]:
 
-
+drv_out=4
+wire_width=22
 layer_straight_line=["ptl_13_ip1","ptl_13_mn0"]
 layer_corner_line=["ptl_14_ip1","ptl_14_mn0"]
 route_lib="ysc_layout"
