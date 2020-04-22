@@ -10,6 +10,7 @@
 
 # In[2]:
 
+inf=float('inf')
 
 layout_unit_len=30
 
@@ -17,8 +18,8 @@ layout_unit_len=30
 # In[1]:
 
 
-map_enlarge=10
-map_offset=5
+map_enlarge=20
+map_offset=8
 
 
 # In[2]:
