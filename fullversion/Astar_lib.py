@@ -6,6 +6,7 @@ from Layout_lib import *
 from Netlist_lib import *
 from Param_lib import *
 import sys
+import random
 
 class SearchEntry():
     def __init__(self, x, y, g_cost, f_cost=0, pre_entry=None):
@@ -33,9 +34,9 @@ class Map():
                     used_point=used_point+1
         util_temp=float(used_point/total_point)*10000
         util=int(util_temp)
-        print("Total point:{0}".format(total_point))
-        print("Used point:{0}".format(used_point))       
-        return util
+        #print("Total point:{0}".format(total_point))
+        #print("Used point:{0}".format(used_point))       
+        return [total_point,used_point,util]
 
     def createBlock(self, block_num):
         for i in range(block_num):
@@ -743,7 +744,10 @@ def get_group(coord_info,block_margin):
 
     return range_list,coord_list
 
-
+def randomize_list(coord_list):
+    new=coord_list
+    random.shuffle(new)  
+    return new
 
 def map_info(file_dir): #从routing信息和netlist信息来获取制作map的参数
     netlist_info=read_netlist(file_dir)#读netlist
@@ -757,6 +761,8 @@ def map_info(file_dir): #从routing信息和netlist信息来获取制作map的�
     coord_info=get_route_coord(connection_info,dict_layout_info)#获取routing的坐标信息
     block_margin=layout_unit_len*2
     [range_list,index_list]=get_group(coord_info,block_margin)
+    #for i in range(len(index_list)):
+    #    index_list[i]=randomize_list(index_list[i])
     info_list=[]
     #print(len(layout_info),len(coord_info))
     for i in range(len(range_list)):
@@ -786,7 +792,7 @@ def map_info(file_dir): #从routing信息和netlist信息来获取制作map的�
 #map_info(File_dir)
 
 
-def cross_map_search(info,lib,cell):
+def cross_map_search(info,lib,cell,display):
     #布线信息列表
     width=info[0]#获取map最大宽度
     height=info[1]#获取map最大高度
@@ -795,6 +801,7 @@ def cross_map_search(info,lib,cell):
     map_origin=info[3]#获取layout原点
     coord_info=info[4]#获取互联线坐标
     connection_info=info[5]#获取互联线信息
+    range_list=info[6]
     #info_coord=open("routing_coord_info","w")
     #print(connection_info,file=info_coord)
     #print(coord_info,file=info_coord)
@@ -810,8 +817,9 @@ def cross_map_search(info,lib,cell):
     map_for_search_path_num = 3 #前三个map用于寻路
     
     def showMap_all(map_list):#显示所有map函数
-        for k in range(0,map_for_search_path_num):
-            map_list[k].showMap()
+        if(display==1):
+            for k in range(0,map_for_search_path_num):
+                map_list[k].showMap()
             
     text=open("./createinst.il",'a+')
     cellid='''cellID=dbOpenCellViewByType("{0}" "{1}" "layout" "maskLayout")'''.format(lib,cell)#dbopen函数，指定单元
@@ -1061,7 +1069,8 @@ def cross_map_search(info,lib,cell):
             len_path=len(path_min_temp)
             if(len_path>=min_port_reg_try):#minimal path len acceptable is ?
                 print("succeed")
-                print("--------------------show result,path:{0}-----------------------".format(i+1))
+                if(display==1):
+                    print("--------------------show result,path:{0}-----------------------".format(i+1))
                 showMap_all(map_list)
 
                 for k in range(0,len_path):
@@ -1104,7 +1113,7 @@ coord_info[i][1][0][0],coord_info[i][1][0][1],connection_info[i][0],connection_i
     invalid_loop=False #retry loop检测，若重新排序后和之前某次仿真的序列一样，说明后续所有重排操作进入无限循环
     for t in range(0,try_num):    
         run_routing(0)#运行布线函数
-        print("Map utilization:{0}%".format(util_summary[t]/100))
+        print("Map utilization:{0}%".format(util_summary[t][2]/100))
         curr_script_len=len(script_summary[t])#获取本次布线的script长度，来判断本次布线成功与否
         if(curr_script_len==coord_len):#如果成功则终止retry程序
             print("Succeed at cycle {0}, exit searching program".format(t))
@@ -1157,14 +1166,16 @@ coord_info[i][1][0][0],coord_info[i][1][0][1],connection_info[i][0],connection_i
     else:#如果有多个最大值则比较map利用率，选最小的 #如果多个map利用率相同则取第一个，如果以后有别的影响因素再进一步筛选
         util_temp_list=[]
         for u in max_index_list:
-            util_temp_list.append(util_summary[u])
+            util_temp_list.append(util_summary[u][2])
         util_min_index=util_temp_list.index(min(util_temp_list))
         best_index=max_index_list[util_min_index]
     #print(max_script_length_index)
     for s in range(0,script_len_list[best_index]):#输出最长script
         for script_str in script_summary[best_index][s]:
             print(script_str,file=text)
-    print("---------------------------------summary-------------------------------------")#以下输出summary信息
+
+
+    print("-------------------------summary for block {0} to {1} ----------------------------".format(range_list[0],range_list[1]))#以下输出summary信息
     if(len_script==1):
         print("All path finished successfully without running retry program")
     else:
@@ -1174,5 +1185,9 @@ coord_info[i][1][0][0],coord_info[i][1][0][1],connection_info[i][0],connection_i
                 print("Failed:{0}".format(failed_path))
         else:
             print("All path finished successfully after running retry program")
-    print("Current map utilization is {0}%".format(util_summary[best_index]/100))
+    print("Current map utilization is {0}%".format(util_summary[best_index][2]/100))
+    #print(util_summary[best_index])
+
+    print("--------------------------------------------------------------------------------------------------")
     text.close()
+    return [log_summary[best_index],util_summary[best_index]]

@@ -1035,7 +1035,8 @@ def path_to_pcell(info,path_coord,index_seq):
                     corner_width=abs(path_coord[info[i+1][2]][0]-path_coord[info[i][2]][0])/layout_unit_len
                 else:
                     corner_width=(abs(path_coord[info[i+1][2]][0]-path_coord[info[i][2]][0])+layout_unit_len/2)/layout_unit_len'''
-
+            else:
+                return ["print('failed')"]
             #print(corner_width)
             wire_type=index_to_layer(info[i][0])
             origin=path_coord[info[i][2]]
@@ -1044,6 +1045,8 @@ def path_to_pcell(info,path_coord,index_seq):
             descend=get_descend(in_index,path_coord[info[i][2]],path_coord[info[i][3]])
             corner_i=corner(wire_width,corner_width,wire_type,origin,in_index,out_index,descend)
             script.append(corner_i)
+        else:
+            return ["print('failed')"]
                     
     last_itface=interface(rec_out,wire_width,info[-1][0],info[-1][1],info[-1][2])
     script.append(last_itface)
