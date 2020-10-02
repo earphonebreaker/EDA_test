@@ -1025,16 +1025,6 @@ def path_to_pcell(info,path_coord,index_seq):
                     corner_width=(abs(path_coord[index_temp][0]-path_coord[info[i][2]][0])+layout_unit_len)/layout_unit_len
                 else:
                     corner_width=(abs(path_coord[index_temp][0]-path_coord[info[i][2]][0])+3*layout_unit_len/2)/layout_unit_len
-            '''if(i==len_info-2):
-                if(same_index):
-                    corner_width=abs(path_coord[info[i][3]][0]-path_coord[info[i][2]][0]+layout_unit_len)/layout_unit_len
-                else:
-                    corner_width=(abs(path_coord[info[i][3]][0]-path_coord[info[i][2]][0])+3*layout_unit_len/2)/layout_unit_len
-            else:
-                if(same_index):
-                    corner_width=abs(path_coord[info[i+1][2]][0]-path_coord[info[i][2]][0])/layout_unit_len
-                else:
-                    corner_width=(abs(path_coord[info[i+1][2]][0]-path_coord[info[i][2]][0])+layout_unit_len/2)/layout_unit_len'''
             else:
                 return ["print('failed')"]
             #print(corner_width)
